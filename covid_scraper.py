@@ -52,6 +52,9 @@ class COVID_Day:
     def sum_cases(self):
         self.num_cases = len(self.case_list)
 
+    def update_running_total(self,previous_total=0):
+        self.running_total = self.num_cases + previous_total
+
 
 covid_data = [];
 
@@ -76,26 +79,44 @@ for pre in pre_list:
         # add the case to the COVID_Day
         foo.add_case(case_id)
 
-    foo.sum_cases()
+    foo.sum_cases() # creates a self.num_cases property
     covid_data.append(foo)
 
+# the list starts with the most recent data, so we need to reverse it to be in 
+# chronological order
+covid_data.reverse()
 
 date_list = []
 cases_per_day_list = []
-for day in covid_data:
+running_total_list = []
+for i,day in enumerate(covid_data):
+
+    if day == covid_data[0]:
+        # if it is the first day of data, then there is no previous day and the method
+        # defaults to adding 0 to the current day's case count
+        day.update_running_total()
+    else:
+        # otherwise, add the running total from the previous day to today's case count
+        day.update_running_total(covid_data[i-1].running_total)
+
+    # make lists for plotting purposes
     date_list.append(day.date)
     cases_per_day_list.append(day.num_cases)
+    running_total_list.append(day.running_total)
 
-date_list.reverse()
-cases_per_day_list.reverse()
+    # print(f"{day.date} -- {day.num_cases} ({day.running_total})")
 
 
-fig,ax = plt.subplots()
-ax.plot(date_list,cases_per_day_list,marker="o")
+fig,ax = plt.subplots(2,figsize=(10,7))
+fig.suptitle("COVID Cases at Electric Boat")
+ax[0].plot(date_list,cases_per_day_list,marker="o")
+ax[1].plot(date_list,running_total_list,marker="o")
+
 plt.xticks(rotation=45)
-plt.xlabel('Date', fontsize=12)
-plt.ylabel("Daily Case Count")
-ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+ax[0].set_ylabel("Cases Per Day")
+ax[1].set_ylabel("Running Total")
+
+ax[1].xaxis.set_major_locator(mdates.AutoDateLocator())
 
 plt.gcf().autofmt_xdate()
 plt.show()
