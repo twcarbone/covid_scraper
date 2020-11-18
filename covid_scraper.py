@@ -36,8 +36,19 @@ page = requests.get(url)
 # return a soup object
 soup = bs(page.content, 'html.parser')
 
-# print(soup.prettify())
+print(soup.prettify())
 # print(list(soup.children))
+
+
+def print_case_list_per_day(covid_data):
+    for day in covid_data:
+        print(f"{day.date} -- ",end="")
+
+        for case in day.case_list:
+            if case == day.case_list[-1]:
+                print(case)
+            else:
+                print(f"{case}, ",end="")
 
 
 class COVID_Day:
@@ -52,7 +63,8 @@ class COVID_Day:
     def sum_cases(self):
         self.num_cases = len(self.case_list)
 
-    def update_running_total(self,previous_total=0):
+    def update_running_total(self,previous_total=87):
+        # the online case counter started at case 88, so the previous total was 87
         self.running_total = self.num_cases + previous_total
 
 
@@ -93,7 +105,7 @@ for i,day in enumerate(covid_data):
 
     if day == covid_data[0]:
         # if it is the first day of data, then there is no previous day and the method
-        # defaults to adding 0 to the current day's case count
+        # defaults to adding 87 to the current day's case count
         day.update_running_total()
     else:
         # otherwise, add the running total from the previous day to today's case count
@@ -103,9 +115,6 @@ for i,day in enumerate(covid_data):
     date_list.append(day.date)
     cases_per_day_list.append(day.num_cases)
     running_total_list.append(day.running_total)
-
-    # print(f"{day.date} -- {day.num_cases} ({day.running_total})")
-
 
 fig,ax = plt.subplots(2,figsize=(10,7))
 fig.suptitle("COVID Cases at Electric Boat")
@@ -120,3 +129,5 @@ ax[1].xaxis.set_major_locator(mdates.AutoDateLocator())
 
 plt.gcf().autofmt_xdate()
 plt.show()
+
+print_case_list_per_day(covid_data)

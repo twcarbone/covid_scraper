@@ -1,0 +1,7 @@
+TODO
+ - some days are not delineated by the <pre> html tag, but rather by the <p> html tag--need to handle this
+ - modularize code into functions
+ - further parse the case info to get department, building, etc.
+
+DONE
+ - 
