@@ -165,50 +165,64 @@ class COVID_Day:
         self.case_list = []
         self.case_num_list = []
         self.location_list = []
-        self.num_cases = 0
-        self.running_total = 0
 
     def add_case(self,case):
-        
-        def parse_location(case):
+
+
+        self.case_list.insert(0,case)
+
+        case_num = case[case.index("#")+1:case.index(":")]
+        self.case_num_list.insert(0,case_num)
+
+        def get_location(case):
             """
-            Options are:    Employee at ...
-                            Employee from ...
-                            Employee on ...
-                            Employee/permanent resident in ... (single case)
-            
-
-
-            Attempt to extract the location (options below) from the case string. Return
-            'Failed' if no location was found.
+            Parse the first test portion of the entire case description. Some cases are 
+            outliers, and are instead assigned by looking up in a dictionary. Location is
+            assigned "___LocationFailed___" if the parser failed to assign a location.
             """
-
-            location_dict = {
-                "New London facility" : "New London",
-                "Eagle Park facility" : "Eagle Park",
-                "Groton facility" : "Groton Shipyard",
-                "Quonset Point facility" : "Quonset Point",
-                "King's Highway facility" : "King's Highway",
-                "King's Bay facility" : "King's Bay",
-                "business travel" : "Business Travel",
-                "personal travel" : "Personal Travel",
-                "Groton Subase" : "Groton SUBASE",
-                "Portsmouth Naval Shipyard" : "PNSY",
+            location_corrections = {
+                "88" : "Quonset Point",
+                "89" : "Kings Bay",
+                "90" : "Travel (Business)",
+                "91" : "Quonset Point",
+                "92" : "New London",
+                "93" : "Travel (Personal)",
+                "94" : "Quonset Point",
+                "95" : "New London",
+                "96" : "Groton",
+                "97" : "Quonset Point",
+                "98" : "Quonset Point",
+                "100" : "Other",
+                "104" : "NEO",
+                "110" : "SUBASE",
+                "111" : "Groton Airport",
+                "120" : "SUBASE",
+                "237" : "PNSY",
+                "244" : "WEO",
+                "258" : "SUBASE",
+                "269" : "SUBASE",
+                "278" : "PNSY",
+                "292" : "PNSY"
             }
 
+            location = "___LocationFailed___"
             try:
                 location = case[case.index("from")+5:case.index(" facility")]
             except ValueError:
-                location = "---Failed"
+                # location = "__Failed__"
+                for corrected_case_num,corrected_location in location_corrections.items():
+                    if corrected_case_num == self.case_num_list[0]:
+                        location = corrected_location
+            
+            try:
+                location = location.replace("’","") # 89,99,275
+            except ValueError:
+                pass
 
             return location
 
-        case_num = case[case.index("#")+1:case.index(":")]
-        self.case_list.insert(0,case)
-        self.case_num_list.insert(0,case_num)
 
-        location = parse_location(case)
-        self.location_list.insert(0,location)
+        self.location_list.insert(0,get_location(case))
 
     def sum_cases(self):
         self.num_cases = len(self.case_list)
