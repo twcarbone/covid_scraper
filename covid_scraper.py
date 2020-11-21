@@ -41,17 +41,6 @@ soup = bs(page.content, 'html.parser')
 # print(list(soup.children))
 
 
-def print_case_list_per_day(covid_data):
-    for day in covid_data:
-        print(f"{day.date_str} ({day.date_obj}) -- ",end="")
-
-        for case in day.case_list:
-            if case == day.case_list[-1]:
-                print(case)
-            else:
-                print(f"{case}, ",end="")
-
-
 def parse_html(tag,soup):
     covid_data = []
 
@@ -73,26 +62,67 @@ def parse_html(tag,soup):
 
             # extract some text
             case = li.find('h3').get_text() # #95: Employee at New London facility, Dept. 462
-            case_id = case[case.index("#")+1:case.index(":")] # 95
 
             # add the case to the COVID_Day
-            foo.add_case(case_id)
+            foo.add_case(case)
 
         foo.sum_cases() # creates a self.num_cases property
         covid_data.append(foo)
 
+    covid_data.reverse()
     return covid_data
+
+
+def print_case_list_per_day(covid_data):
+    for day in covid_data:
+        print(f"{day.date_str} ({day.date_obj}) -- ",end="")
+
+        for case_num in day.case_num_list:
+            if case_num == day.case_num_list[-1]:
+                print(case_num)
+            else:
+                print(f"{case_num}, ",end="")
+
+
+def merge_day_list(list1,list2):
+    """
+    list1 and list2 are lists of COVID_day classes. list1 is small, and list2 is the 
+    'master' list. Merge list1 into list2 at its chronoligcal location by date. Return
+    list2.
+    """
+    for day1 in list1:
+        for i,day2 in enumerate(list2):
+            if day1.date_obj < day2.date_obj:
+                list2.insert(i,day1)
+                # we need to break to avoid an infinite loop
+                break
+
+
+    return list2
 
 
 # class for covid day
 class COVID_Day:
+    """
+    A template for one day's worth of cases, including the date, list of cases, running 
+    total, etc.
+
+    self.date_str           'October 23, 2020'
+    self.date_obj           '2020-10-23 00:00:00'
+    self.case_list          ['#95: Employee at ... ','#96: Employee at ... ']
+    self.case_num_list      ['95','96']
+    self.num_cases          14
+    self.running_total      364
+    """
     def __init__(self,date_str):
         self.date_str = date_str
         self.case_list = [];
-        self.case_ID_list = [];
+        self.case_num_list = [];
 
-    def add_case(self,case_id):
-        self.case_list.append(case_id)
+    def add_case(self,case):
+        case_num = case[case.index("#")+1:case.index(":")]
+        self.case_list.insert(0,case)
+        self.case_num_list.insert(0,case_num)
 
     def sum_cases(self):
         self.num_cases = len(self.case_list)
@@ -108,18 +138,9 @@ class COVID_Day:
 
 covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
-
-print_case_list_per_day(covid_data_pre)
-print("================================================================================")
-print_case_list_per_day(covid_data_p)
+covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
 
-
-
-"""
-# the list starts with the most recent data, so we need to reverse it to be in 
-# chronological order
-covid_data.reverse()
 
 
 date_list = []
