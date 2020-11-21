@@ -1,26 +1,40 @@
 
-# <article> element of the html is the case tracker
-#   <article>
-#       <div>
-#           <pre> **
-#               Posted on November 16, 2020
-#           </pre>
-#           <ul>
-#               <li>
-#                   <h3>
-#                       Employee from New London facility ...
-#                   </h3>
-#               <li>
-#                   <h3>
-#                       Employee from Groton facility ...
-#                   </h3>
-#           </ul>
-#           <pre>
-#               [...]
-#           </pre>
-#       </div>
-#
-#   ** some <pre> </pre> entries are <p> </P instead
+"""
+//
+<article> element of the html is the case tracker
+    <article>
+        <div>
+            <pre> **
+                Posted on November 16, 2020
+            </pre>
+            <ul>
+                <li>
+                     <h3>
+                          Employee from New London facility ...
+                    </h3>
+                <li>
+                    <h3>
+                        Employee from Groton facility ...
+                    </h3>
+            </ul>
+        <pre>
+            [...]
+        </pre>
+        <p> **
+            [...]
+        </p>
+    </div>
+
+** both <pre> and <p> tags are used to denote daily postings
+
+//
+Note: to be able to see a figure from wsl using matplotlib:
+    0. install VcXsrv on Windows
+    1. from Windows, run C:/Program Files/VcXsrv/xlaunch.exe
+    2. from wsl, run 'export DISPLAY=localhost:0.0'
+
+"""
+
 
 import requests
 from bs4 import BeautifulSoup as bs
@@ -44,8 +58,8 @@ soup = bs(page.content, 'html.parser')
 def parse_html(tag,soup):
     covid_data = []
 
-    tag = soup.find('article').find('div').find_all(tag)
-    for pre in tag:
+    tag_list = soup.find('article').find('div').find_all(tag)
+    for pre in tag_list:
     
         # extract some text
         pre_text = pre.get_text() # Posted on October 17, 2020:
@@ -53,9 +67,6 @@ def parse_html(tag,soup):
 
         # after getting the date create an instance of the COVID_day class using the date
         foo = COVID_Day(report_date)
-
-        # convert the date string into a datetime object
-        foo.make_date_obj()
 
         ul = pre.next_sibling.next_sibling.find_all('li')
         for li in ul:
@@ -73,15 +84,50 @@ def parse_html(tag,soup):
     return covid_data
 
 
-def print_case_list_per_day(covid_data):
-    for day in covid_data:
-        print(f"{day.date_str} ({day.date_obj}) -- ",end="")
+def print_cases(covid_data,option):
+    """
+    Helper function for testing.
 
-        for case_num in day.case_num_list:
-            if case_num == day.case_num_list[-1]:
-                print(case_num)
-            else:
-                print(f"{case_num}, ",end="")
+    option      1: 'case_num -- location'
+                2: 'date -- case_num_list'
+                3: 'short'
+                4: 'long'
+    """
+    for day in covid_data:
+        # 
+        if option == 1:
+            for case_num, location in zip(day.case_num_list,day.location_list):
+                print(f"{case_num}:\t{location}")
+
+        #
+        elif option == 2:
+            print(f"{day.date_str} ({day.date_obj}) -- ",end="")
+
+            for case_num in day.case_num_list:
+                if case_num == day.case_num_list[-1]:
+                    print(case_num)
+                else:
+                    print(f"{case_num}, ",end="")
+
+        else:
+            for case in day.case_list:
+                #
+                if option == 3:
+                    print(case[0:100])
+
+                #
+                elif option == 4:
+                    print(case)
+
+
+
+def print_unique_locations(covid_data):
+    unique = []
+    for day in covid_data:
+        for location in day.location_list:
+            if not(location in unique):
+                unique.append(location)
+                print(location)
 
 
 def merge_day_list(list1,list2):
@@ -96,7 +142,6 @@ def merge_day_list(list1,list2):
                 list2.insert(i,day1)
                 # we need to break to avoid an infinite loop
                 break
-
 
     return list2
 
@@ -116,13 +161,54 @@ class COVID_Day:
     """
     def __init__(self,date_str):
         self.date_str = date_str
-        self.case_list = [];
-        self.case_num_list = [];
+        self.date_obj = datetime.strptime(self.date_str,'%B %d, %Y')
+        self.case_list = []
+        self.case_num_list = []
+        self.location_list = []
+        self.num_cases = 0
+        self.running_total = 0
 
     def add_case(self,case):
+        
+        def parse_location(case):
+            """
+            Options are:    Employee at ...
+                            Employee from ...
+                            Employee on ...
+                            Employee/permanent resident in ... (single case)
+            
+
+
+            Attempt to extract the location (options below) from the case string. Return
+            'Failed' if no location was found.
+            """
+
+            location_dict = {
+                "New London facility" : "New London",
+                "Eagle Park facility" : "Eagle Park",
+                "Groton facility" : "Groton Shipyard",
+                "Quonset Point facility" : "Quonset Point",
+                "King's Highway facility" : "King's Highway",
+                "King's Bay facility" : "King's Bay",
+                "business travel" : "Business Travel",
+                "personal travel" : "Personal Travel",
+                "Groton Subase" : "Groton SUBASE",
+                "Portsmouth Naval Shipyard" : "PNSY",
+            }
+
+            try:
+                location = case[case.index("from")+5:case.index(" facility")]
+            except ValueError:
+                location = "---Failed"
+
+            return location
+
         case_num = case[case.index("#")+1:case.index(":")]
         self.case_list.insert(0,case)
         self.case_num_list.insert(0,case_num)
+
+        location = parse_location(case)
+        self.location_list.insert(0,location)
 
     def sum_cases(self):
         self.num_cases = len(self.case_list)
@@ -131,8 +217,7 @@ class COVID_Day:
         # the online case counter started at case 88, so the previous total was 87
         self.running_total = self.num_cases + previous_total
 
-    def make_date_obj(self):
-        self.date_obj = datetime.strptime(self.date_str,'%B %d, %Y')
+
 
 # ==================================================
 
@@ -140,9 +225,10 @@ covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
+print_cases(covid_data,1)
+print_unique_locations(covid_data)
 
-
-
+"""
 date_list = []
 cases_per_day_list = []
 running_total_list = []
@@ -157,7 +243,7 @@ for i,day in enumerate(covid_data):
         day.update_running_total(covid_data[i-1].running_total)
 
     # make lists for plotting purposes
-    date_list.append(day.date)
+    date_list.append(day.date_obj)
     cases_per_day_list.append(day.num_cases)
     running_total_list.append(day.running_total)
 

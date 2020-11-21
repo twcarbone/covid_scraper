@@ -1,7 +1,9 @@
 TODO
- - some days are not delineated by the <pre> html tag, but rather by the <p> html tag--need to handle this
- - modularize code into functions
- - further parse the case info to get department, building, etc.
+ - further parse the case info to get department, building, etc
+ - add function to check if the running_total matches the highest case # of the latest day. this will
+   tell us if we missed any cases.
 
 DONE
+ - some days are not delineated by the <pre> html tag, but rather by the <p> html tag--need to handle this
+ - modularize code into functions
  - 
