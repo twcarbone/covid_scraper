@@ -17,7 +17,7 @@ def get_soup(url):
 
 def parse_html(tag,soup):
     """
-    
+    Returns a list of covid_case classes, one for each covid case at EB.
     """
     covid_data = []
 

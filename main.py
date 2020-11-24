@@ -50,15 +50,14 @@ def print_cases(covid_data,option):
                 3: 'short'
                 4: 'long'
     """
-    for day in covid_data:
+    for case in covid_data:
         # 
         if option == 1:
-            for case_num, location in zip(day.case_num_list,day.location_list):
-                print(f"{case_num}:\t{location}")
+            print(f"{case.case_num}:\t{case.location}")
 
         #
         elif option == 2:
-            print(f"{day.date_str} ({day.date_obj}) -- ",end="")
+            print(f"{case.date_str} ({case.date_obj}) -- ",end="")
 
             for case_num in day.case_num_list:
                 if case_num == day.case_num_list[-1]:
@@ -81,11 +80,14 @@ def print_cases(covid_data,option):
 soup = get_soup('https://eblanding.com/covid-19-case-report-summary/')
 covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
-"""
+
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
-print_cases(covid_data,3)
-date_list, cases_per_day_list, running_total_list = get_running_totals(covid_data)
+print_cases(covid_data,1)
+
+daily_totals = get_daily_totals(covid_data,print_flag=True)
+
+"""
 loc_list, loc_count_list, loc_shares = get_locations(covid_data,running_total_list[-1],False)
 
 top_locations,top_shares = get_top_locations(loc_list,loc_shares,6,False)

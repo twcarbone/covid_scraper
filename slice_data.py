@@ -1,3 +1,47 @@
+
+
+
+def merge_day_list(list1,list2):
+    """
+    list1 and list2 are lists of covid_case classes. list1 is small, and list2 is the 
+    'master' list. Merge list1 into list2 at its chronoligcal location by date. Return
+    list2.
+    """
+    for case1 in list1:
+        for i,case2 in enumerate(list2):
+            if case1.case_num < case2.case_num:
+                list2.insert(i,case1)
+                # we need to break to avoid an infinite loop
+                break
+
+    return list2
+
+
+
+def get_daily_totals(covid_data,print_flag=False):
+    """
+
+    """
+
+    # create an empty dictionary
+    daily_totals = {}
+
+    # for each case in the covid_data list, if the date associated with the case is not in
+    # the dictionary already, add it; otherwise increment the daily total by 1
+    for case in covid_data:
+        if not(case.date_str in daily_totals):
+            daily_totals[case.date_str] = 1
+        else:
+            daily_totals[case.date_str] += 1
+
+    if print_flag:
+        for date,total in daily_totals.items():
+            print(f"{date}: {total}")
+
+    return daily_totals
+
+
+
 def get_locations(covid_data,total_num_cases,print_flag=False):
     """
     
@@ -65,45 +109,5 @@ def get_top_locations(location_list,location_shares,n,print_flag=False):
 
 
 
-def get_running_totals(covid_data):
-    """
-    Iterate thru the list of COVID_Day classes, and call the method on each class to update
-    the running total.
-    """
-
-    date_list = []
-    cases_per_day_list = []
-    running_total_list = []
-    for i,day in enumerate(covid_data):
-
-        if day == covid_data[0]:
-            # if it is the first day of data, then there is no previous day and the method
-            # defaults to adding 87 to the current day's case count
-            day.update_running_total()
-        else:
-            # otherwise, add the running total from the previous day to today's case count
-            day.update_running_total(covid_data[i-1].running_total)
-
-        # make lists for plotting purposes
-        date_list.append(day.date_obj)
-        cases_per_day_list.append(day.num_cases)
-        running_total_list.append(day.running_total)
-
-    return date_list, cases_per_day_list, running_total_list
 
 
-
-def merge_day_list(list1,list2):
-    """
-    list1 and list2 are lists of COVID_day classes. list1 is small, and list2 is the 
-    'master' list. Merge list1 into list2 at its chronoligcal location by date. Return
-    list2.
-    """
-    for day1 in list1:
-        for i,day2 in enumerate(list2):
-            if day1.date_obj < day2.date_obj:
-                list2.insert(i,day1)
-                # we need to break to avoid an infinite loop
-                break
-
-    return list2
