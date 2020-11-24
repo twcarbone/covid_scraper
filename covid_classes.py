@@ -1,30 +1,30 @@
 from datetime import datetime
 
-class COVID_Day:
+class covid_case:
     """
-    A template for one day's worth of cases, including the date, list of cases, running 
-    total, etc.
+    A template for one covid case at EB.
 
     self.date_str           'October 23, 2020'
     self.date_obj           '2020-10-23 00:00:00'
-    self.case_list          ['#95: Employee at ... ','#96: Employee at ... ']
-    self.case_num_list      ['95','96']
-    self.num_cases          14
-    self.running_total      364
+    self.case_str           '#95: Employee at ... '
+    self.case_num           '95'
+    self.location           'Quonset Point'
+    self.dept               '971'
     """
-    def __init__(self,date_str):
+    def __init__(self,date_str,case_str):
         self.date_str = date_str
         self.date_obj = datetime.strptime(self.date_str,'%B %d, %Y')
-        self.case_list = []
-        self.case_num_list = []
-        self.location_list = []
+        self.case_str = case_str
+        self.case_num = case_str[case_str.index("#")+1:case_str.index(":")]
+        self.location = []
+        self.dept = []
 
     def add_case(self,case):
 
 
         self.case_list.insert(0,case)
 
-        case_num = case[case.index("#")+1:case.index(":")]
+        
         self.case_num_list.insert(0,case_num)
 
         def get_location(case):

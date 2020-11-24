@@ -81,15 +81,17 @@ def print_cases(covid_data,option):
 soup = get_soup('https://eblanding.com/covid-19-case-report-summary/')
 covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
+"""
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
-# print_cases(covid_data,1)
+print_cases(covid_data,3)
 date_list, cases_per_day_list, running_total_list = get_running_totals(covid_data)
-loc_list, loc_count_list, loc_shares = get_locations(covid_data,running_total_list[-1],True)
+loc_list, loc_count_list, loc_shares = get_locations(covid_data,running_total_list[-1],False)
 
-top_locations,top_shares = get_top_locations(loc_list,loc_shares,6,True)
+top_locations,top_shares = get_top_locations(loc_list,loc_shares,6,False)
 
-plot(date_list,cases_per_day_list,running_total_list,top_locations,top_shares)
+# plot(date_list,cases_per_day_list,running_total_list,top_locations,top_shares)
+"""
 
 
 

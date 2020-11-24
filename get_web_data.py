@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
-from covid_classes import COVID_Day
+from covid_classes import covid_case
 
 def get_soup(url):
     """
@@ -26,22 +26,16 @@ def parse_html(tag,soup):
     
         # extract some text
         pre_text = pre.get_text() # Posted on October 17, 2020:
-        report_date = pre_text[pre_text.index("on")+3:pre_text.index(":")] # October 17, 2020
-
-        # after getting the date create an instance of the COVID_day class using the date
-        foo = COVID_Day(report_date)
+        date_str = pre_text[pre_text.index("on")+3:pre_text.index(":")] # October 17, 2020
 
         ul = pre.next_sibling.next_sibling.find_all('li')
         for li in ul:
 
             # extract some text
-            case = li.find('h3').get_text() # #95: Employee at New London facility, Dept. 462
+            case_str = li.find('h3').get_text() # #95: Employee at New London facility, Dept. 462
 
             # add the case to the COVID_Day
-            foo.add_case(case)
-
-        foo.sum_cases() # creates a self.num_cases property
-        covid_data.append(foo)
+            covid_data.append(covid_case(date_str,case_str))
 
     covid_data.reverse()
     return covid_data
