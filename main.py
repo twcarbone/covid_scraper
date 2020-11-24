@@ -39,10 +39,6 @@ Note: to be able to see a figure from wsl using matplotlib:
 from get_web_data import *
 from slice_data import *
 from plot_data import *
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib import gridspec
-import numpy as np
 
 
 def print_cases(covid_data,option):
@@ -80,11 +76,6 @@ def print_cases(covid_data,option):
                 elif option == 4:
                     print(case)
 
-
-
-
-
-
 # ==================================================
 
 soup = get_soup('https://eblanding.com/covid-19-case-report-summary/')
@@ -96,8 +87,9 @@ covid_data = merge_day_list(covid_data_p,covid_data_pre)
 date_list, cases_per_day_list, running_total_list = get_running_totals(covid_data)
 loc_list, loc_count_list, loc_shares = get_locations(covid_data,running_total_list[-1],True)
 
+top_locations,top_shares = get_top_locations(loc_list,loc_shares,6,True)
 
-# plot(date_list,cases_per_day_list,loc_shares)
+plot(date_list,cases_per_day_list,running_total_list,top_locations,top_shares)
 
 
 

@@ -47,9 +47,28 @@ def get_locations(covid_data,total_num_cases,print_flag=False):
 
 
 
+def get_top_locations(location_list,location_shares,n,print_flag=False):
+    """
+    Determine the top n locations with COVID cases, and assign the rest to 'Other'.
+    """
+    top_locations = location_list[0:n-1]
+    top_locations.append("Other")
+
+    top_shares = location_shares[0:n-1]
+    top_shares.append(round(sum(location_shares[n:-1]),2))
+    
+    if print_flag:
+        for i,top_share in enumerate(top_shares):
+            print(f"{top_locations[i]}: {top_shares[i]} %")
+    
+    return top_locations,top_shares
+
+
+
 def get_running_totals(covid_data):
     """
-
+    Iterate thru the list of COVID_Day classes, and call the method on each class to update
+    the running total.
     """
 
     date_list = []
