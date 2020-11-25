@@ -88,71 +88,71 @@ def get_running_totals(covid_data,print_flag=False):
 
 
 
-def get_locations(covid_data,print_flag=False):
+def bucketize_cases(covid_data,attr,print_flag=False):
     """
     Return three lists
     """
 
     # create dictionary
-    unique_locations = {}
+    unique_attrs = {}
     for case in covid_data:
-        if not(case.location in unique_locations):
-            unique_locations[case.location] = 1
+        if not(getattr(case,attr) in unique_attrs):
+            unique_attrs[getattr(case,attr)] = 1
         else:
-            unique_locations[case.location] += 1
+            unique_attrs[getattr(case,attr)] += 1
        
     # make two lists (for plotting purposes)
-    location_list = []
-    location_count_list = []
-    for location,count in unique_locations.items():
-        location_list.append(location)
-        location_count_list.append(count)
+    unique_attrs_list = []
+    unique_attrs_count_list = []
+    for attr,count in unique_attrs.items():
+        unique_attrs_list.append(attr)
+        unique_attrs_count_list.append(count)
 
     # sort the lists by descending order
-    zipped_lists = zip(location_count_list,location_list)
+    zipped_lists = zip(unique_attrs_count_list,unique_attrs_list)
     sorted_pairs = sorted(zipped_lists,reverse=True)
     tuples = zip(*sorted_pairs)
-    location_count_list,location_list = [list (tuple) for tuple in tuples]
+    unique_attrs_count_list,unique_attrs_list = [list (tuple) for tuple in tuples]
 
     # raise error if the number of cases don't match
-    if sum(location_count_list) != (covid_data[-1].case_num-87):
+    if sum(unique_attrs_count_list) != (covid_data[-1].case_num-87):
         raise Exception("Total number of cases does not match")
 
     # compute percentage for each location
-    location_shares = []
-    for i,count in enumerate(location_count_list):
-        location_share = (count/sum(location_count_list))*100
-        location_shares.append(location_share)
+    attr_shares = []
+    for i,count in enumerate(unique_attrs_count_list):
+        attr_share = (count/sum(unique_attrs_count_list))*100
+        attr_shares.append(attr_share)
 
     # print to console if print_flag is True
     if print_flag:
         print("-------------------------------------------")
-        for i,location in enumerate(location_list):
+        for i,attr in enumerate(unique_attrs_list):
             # Quonset Point: 120/396 (30.3 %)
-            print(f"{location_list[i]}: ",end="") # Quonset Point: 
-            print(f"{location_count_list[i]}/{sum(location_count_list)}",end="") # 120/396
-            print(f" ({round(location_shares[i],2)} %)") # (30.3 %)
+            print(f"{unique_attrs_list[i]}: ",end="") # Quonset Point: 
+            print(f"{unique_attrs_count_list[i]}/{sum(unique_attrs_count_list)}",end="") # 120/396
+            print(f" ({round(attr_shares[i],2)} %)") # (30.3 %)
 
-    return location_list, location_count_list, location_shares
+    return unique_attrs_list, unique_attrs_count_list, attr_shares
 
 
 
-def get_top_locations(location_list,location_shares,n,print_flag=False):
+def get_top_shares(attr_list,attr_shares,n,print_flag=False):
     """
     Determine the top n locations with COVID cases, and assign the rest to 'Other'.
     """
-    top_locations = location_list[0:n-1]
-    top_locations.append("Other")
+    top_attrs = attr_list[0:n-1]
+    top_attrs.append("Other")
 
-    top_shares = location_shares[0:n-1]
-    top_shares.append(round(sum(location_shares[n:-1]),2))
+    top_shares = attr_shares[0:n-1]
+    top_shares.append(round(sum(attr_shares[n:-1]),2))
     
     if print_flag:
         print("-------------------------------------------")
         for i,top_share in enumerate(top_shares):
-            print(f"{top_locations[i]}: {top_shares[i]} %")
+            print(f"{top_attrs[i]}: {top_shares[i]} %")
     
-    return top_locations,top_shares
+    return top_attrs,top_shares
 
 
 
