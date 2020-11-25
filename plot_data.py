@@ -22,8 +22,7 @@ def plot(DATES, CASES_PER_DAY, RUNNING_TOTALS, LOCATIONS,SHARES):
 
     ax2 = fig.add_subplot(spec[0,1])
     ax2.pie(SHARES,labels=LOCATIONS)
-    # ax2.legend(labels=loc_list,loc='center right')
-
+    
     plt.xticks(rotation=45)
     plt.gcf().autofmt_xdate()
 

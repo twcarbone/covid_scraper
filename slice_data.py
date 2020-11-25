@@ -20,7 +20,15 @@ def merge_day_list(list1,list2):
 
 def get_daily_totals(covid_data,print_flag=False):
     """
+    Returns dictionary daily totals.
 
+    daily_totals = {
+        ...
+        "November 23, 2020" : 22,
+        "November 24, 2020" : 9,
+        "November 25, 2020" : 13,
+        ...
+    }
     """
 
     # create an empty dictionary
@@ -29,32 +37,67 @@ def get_daily_totals(covid_data,print_flag=False):
     # for each case in the covid_data list, if the date associated with the case is not in
     # the dictionary already, add it; otherwise increment the daily total by 1
     for case in covid_data:
-        if not(case.date_str in daily_totals):
-            daily_totals[case.date_str] = 1
+        if not(case.date_obj in daily_totals):
+            daily_totals[case.date_obj] = 1
         else:
-            daily_totals[case.date_str] += 1
+            daily_totals[case.date_obj] += 1
+    
+    # make 2 lists for plotting
+    dates = []
+    totals = []
+    for date,total in daily_totals.items():
+        dates.append(date)
+        totals.append(total)
 
     if print_flag:
         for date,total in daily_totals.items():
             print(f"{date}: {total}")
 
-    return daily_totals
+    return dates, totals
 
 
 
-def get_locations(covid_data,total_num_cases,print_flag=False):
+def get_running_totals(covid_data,print_flag=False):
     """
-    
+
+    """
+    dates = []
+    daily_running = []
+    for i,case in enumerate(covid_data):
+        if case == covid_data[0]:
+            continue
+        elif case == covid_data[-1]:
+            # for the final case in the list
+            dates.append(case.date_str)
+            daily_running.append(case.case_num)
+        elif case.date_str == covid_data[i-1].date_str:
+            continue
+        else:
+            # if the iterator is on a new date, then the previous date was the last date in
+            # a day, and its case number is the running total for that day.
+            dates.append(covid_data[i-1].date_str)
+            daily_running.append(covid_data[i-1].case_num)
+
+    if print_flag:
+        for i,date in enumerate(dates):
+            print(f"{date}: {daily_running[i]}")
+
+    return daily_running
+
+
+
+def get_locations(covid_data,print_flag=False):
+    """
+    Return three lists
     """
 
     # create dictionary
     unique_locations = {}
-    for day in covid_data:
-        for location in day.location_list:
-            if not(location in unique_locations):
-                unique_locations[location] = 1
-            else:
-                unique_locations[location] += 1
+    for case in covid_data:
+        if not(case.location in unique_locations):
+            unique_locations[case.location] = 1
+        else:
+            unique_locations[case.location] += 1
        
     # make two lists (for plotting purposes)
     location_list = []
@@ -70,7 +113,7 @@ def get_locations(covid_data,total_num_cases,print_flag=False):
     location_count_list,location_list = [list (tuple) for tuple in tuples]
 
     # raise error if the number of cases don't match
-    if sum(location_count_list) != (total_num_cases-87):
+    if sum(location_count_list) != (covid_data[-1].case_num-87):
         raise Exception("Total number of cases does not match")
 
     # compute percentage for each location
