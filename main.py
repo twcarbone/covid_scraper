@@ -45,35 +45,35 @@ def print_cases(covid_data,option):
     """
     Helper function for testing.
 
-    option      1: 'case_num -- location'
-                2: 'date -- case_num_list'
-                3: 'short'
-                4: 'long'
     """
     for case in covid_data:
-        # 
+        # 393: Groton
         if option == 1:
             print(f"{case.case_num}:\t{case.location}")
 
-        #
-        elif option == 2:
-            print(f"{case.date_str} ({case.date_obj}) -- ",end="")
+       
+        # # October 23, 2020 (2020-10-23 00:00:00) -- []
+        # elif option == 2:
+        #     print(f"{case.date_str} ({case.date_obj}) -- ",end="")
 
-            for case_num in day.case_num_list:
-                if case_num == day.case_num_list[-1]:
-                    print(case_num)
-                else:
-                    print(f"{case_num}, ",end="")
+        #     for case_num in day.case_num_list:
+        #         if case_num == day.case_num_list[-1]:
+        #             print(case_num)
+        #         else:
+        #             print(f"{case_num}, ",end="")
+       
 
-        else:
-            for case in day.case_list:
-                #
-                if option == 3:
-                    print(case[0:100])
+        # 
+        elif option == 3:
+             print(f"{case.case_str[0:75]} -- {case.dept}")
 
-                #
-                elif option == 4:
-                    print(case)
+        # 
+        elif option == 4:
+            print(case.case_str)
+
+        # 
+        elif option == 5:
+            print(F"{case.case_num}:\t{case.dept}")
 
 # ==================================================
 
@@ -83,7 +83,7 @@ covid_data_p = parse_html('p',soup) # October 19th & 23rd
 
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
-# print_cases(covid_data,1)
+print_cases(covid_data,3)
 
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
 
@@ -93,11 +93,5 @@ locations,location_counts,location_shares = get_locations(covid_data,print_flag=
 
 top_locations,top_shares = get_top_locations(locations,location_shares,6,False)
 
-plot(dates,daily_totals,daily_running,top_locations,top_shares)
-
-
-
-
-
-
+# plot(dates,daily_totals,daily_running,top_locations,top_shares)
 

@@ -18,7 +18,7 @@ class covid_case:
         self.case_str = case_str
         self.case_num = int(case_str[case_str.index("#")+1:case_str.index(":")])
         self.location = get_location(self.case_str,self.case_num)
-        # self.dept = get_dept(self.case_str)
+        self.dept = get_dept(self.case_str)
 
 
 def get_location(case_str,case_num):
@@ -68,7 +68,16 @@ def get_location(case_str,case_num):
     return location
 
 
+
 def get_dept(case_str):
     """
 
     """
+
+    dept = "___DeptFailed___"
+    try:
+        dept = case_str[case_str.index("Dept.")+6:case_str.index("Dept.")+9]
+    except ValueError:
+        pass
+
+    return dept
