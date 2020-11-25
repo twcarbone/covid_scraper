@@ -86,11 +86,11 @@ covid_data = merge_day_list(covid_data_p,covid_data_pre)
 # print_cases(covid_data,1)
 
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
-print("-------------------------------------------")
+
 daily_running = get_running_totals(covid_data,print_flag=False)
-print("-------------------------------------------")
+
 locations,location_counts,location_shares = get_locations(covid_data,print_flag=False)
-print("-------------------------------------------")
+
 top_locations,top_shares = get_top_locations(locations,location_shares,6,False)
 
 plot(dates,daily_totals,daily_running,top_locations,top_shares)

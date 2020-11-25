@@ -50,6 +50,7 @@ def get_daily_totals(covid_data,print_flag=False):
         totals.append(total)
 
     if print_flag:
+        print("-------------------------------------------")
         for date,total in daily_totals.items():
             print(f"{date}: {total}")
 
@@ -79,6 +80,7 @@ def get_running_totals(covid_data,print_flag=False):
             daily_running.append(covid_data[i-1].case_num)
 
     if print_flag:
+        print("-------------------------------------------")
         for i,date in enumerate(dates):
             print(f"{date}: {daily_running[i]}")
 
@@ -124,6 +126,7 @@ def get_locations(covid_data,print_flag=False):
 
     # print to console if print_flag is True
     if print_flag:
+        print("-------------------------------------------")
         for i,location in enumerate(location_list):
             # Quonset Point: 120/396 (30.3 %)
             print(f"{location_list[i]}: ",end="") # Quonset Point: 
@@ -145,6 +148,7 @@ def get_top_locations(location_list,location_shares,n,print_flag=False):
     top_shares.append(round(sum(location_shares[n:-1]),2))
     
     if print_flag:
+        print("-------------------------------------------")
         for i,top_share in enumerate(top_shares):
             print(f"{top_locations[i]}: {top_shares[i]} %")
     
