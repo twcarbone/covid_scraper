@@ -50,18 +50,9 @@ def print_cases(covid_data,option):
         # 393: Groton
         if option == 1:
             print(f"{case.case_num}:\t{case.location}")
+     
+        # if option == 2:
 
-       
-        # # October 23, 2020 (2020-10-23 00:00:00) -- []
-        # elif option == 2:
-        #     print(f"{case.date_str} ({case.date_obj}) -- ",end="")
-
-        #     for case_num in day.case_num_list:
-        #         if case_num == day.case_num_list[-1]:
-        #             print(case_num)
-        #         else:
-        #             print(f"{case_num}, ",end="")
-       
 
         # 
         elif option == 3:
@@ -76,8 +67,9 @@ def print_cases(covid_data,option):
             print(F"{case.case_num}:\t{case.dept}")
 
 # ==================================================
+url = 'https://eblanding.com/covid-19-case-report-summary/'
+soup = get_soup(url,print_flag=True)
 
-soup = get_soup('https://eblanding.com/covid-19-case-report-summary/')
 covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
 
@@ -87,7 +79,7 @@ covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
 
-daily_running = get_running_totals(covid_data,print_flag=False)
+daily_running = get_running_totals(covid_data,print_flag=True)
 
 locations,location_counts,location_shares = bucketize_cases(covid_data,'location',False)
 depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)

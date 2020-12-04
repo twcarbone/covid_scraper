@@ -2,15 +2,16 @@ import requests
 from bs4 import BeautifulSoup as bs
 from covid_classes import covid_case
 
-def get_soup(url):
+def get_soup(url,print_flag=False):
     """
 
     """
     page = requests.get(url)
     soup = bs(page.content, 'html.parser')
 
-    # print(soup.prettify())
-    # print(list(soup.children))
+    if print_flag:
+        article = soup.find('article')
+        print(article.prettify())
 
     return soup
 
