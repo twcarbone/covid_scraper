@@ -39,43 +39,18 @@ Note: to be able to see a figure from wsl using matplotlib:
 from get_web_data import *
 from slice_data import *
 from plot_data import *
+from debug import print_cases
 
 
-def print_cases(covid_data,option):
-    """
-    Helper function for testing.
-
-    """
-    for case in covid_data:
-        # 393: Groton
-        if option == 1:
-            print(f"{case.case_num}:\t{case.location}")
-     
-        # if option == 2:
-
-
-        # 
-        elif option == 3:
-             print(f"{case.case_str[0:75]} -- {case.dept}")
-
-        # 
-        elif option == 4:
-            print(case.case_str)
-
-        # 
-        elif option == 5:
-            print(F"{case.case_num}:\t{case.dept}")
-
-# ==================================================
 url = 'https://eblanding.com/covid-19-case-report-summary/'
-soup = get_soup(url,print_flag=True)
+soup = get_soup(url,print_flag=False)
 
 covid_data_pre = parse_html('pre',soup)
 covid_data_p = parse_html('p',soup) # October 19th & 23rd
 
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
-# print_cases(covid_data,3)
+print_cases(covid_data,1)
 
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
 
