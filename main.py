@@ -39,6 +39,7 @@ Note: to be able to see a figure from wsl using matplotlib:
 from get_web_data import *
 from slice_data import *
 from plot_data import *
+from postgres_db import *
 from debug import print_cases
 
 
@@ -50,11 +51,11 @@ covid_data_p = parse_html('p',soup) # October 19th & 23rd
 
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 
-print_cases(covid_data,1)
+# print_cases(covid_data,1)
 
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
 
-daily_running = get_running_totals(covid_data,print_flag=True)
+daily_running = get_running_totals(covid_data,print_flag=False)
 
 locations,location_counts,location_shares = bucketize_cases(covid_data,'location',False)
 depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
@@ -62,6 +63,15 @@ depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
 top_locations,top_loc_shares = get_top_shares(locations,location_shares,6,False)
 top_depts,top_dept_shares = get_top_shares(depts,dept_shares,50,False)
 
+conn = connect_to_psql_db("eb_covid")
+for case in covid_data:
+  add_case_to_db(conn,case.case_num,case.date_str,case.location,case.dept)
+
+conn.close()
+
+
+"""
 plot(dates,daily_totals,daily_running,
      top_locations,top_loc_shares,
      top_depts,top_dept_shares)
+"""
