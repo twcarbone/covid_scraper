@@ -8,7 +8,7 @@ class covid_case:
     self.date_obj           '2020-10-23 00:00:00'
     self.case_str           '#95: Employee at ... '
     self.case_num            95
-    self.location           'Quonset Point'
+    self.facility           'Quonset Point'
     self.dept               '971'
     """
 
@@ -17,17 +17,17 @@ class covid_case:
         self.date_obj = datetime.strptime(self.date_str,'%B %d, %Y')
         self.case_str = case_str
         self.case_num = int(case_str[case_str.index("#")+1:case_str.index(":")])
-        self.location = get_location(self.case_str,self.case_num)
+        self.facility = get_facility(self.case_str,self.case_num)
         self.dept = get_dept(self.case_str)
 
 
-def get_location(case_str,case_num):
+def get_facility(case_str,case_num):
     """
     Parse the first test portion of the entire case description. Some cases are 
-    outliers, and are instead assigned by looking up in a dictionary. Location is
-    assigned "___LocationFailed___" if the parser failed to assign a location.
+    outliers, and are instead assigned by looking up in a dictionary. facility is
+    assigned "___FacilityFailed___" if the parser failed to assign a facility.
     """
-    location_corrections = {
+    facility_corrections = {
         88 : "Quonset Point",
         89 : "Kings Bay",
         90 : "Travel (Business)",
@@ -52,20 +52,20 @@ def get_location(case_str,case_num):
         292 : "PNSY"
     }
 
-    location = "___LocationFailed___"
+    facility = "___facilityFailed___"
     try:
-        location = case_str[case_str.index("from")+5:case_str.index(" facility")]
+        facility = case_str[case_str.index("from")+5:case_str.index(" facility")]
     except ValueError:
-        for corrected_case_num,corrected_location in location_corrections.items():
+        for corrected_case_num,corrected_facility in facility_corrections.items():
             if corrected_case_num == case_num:
-                location = corrected_location
+                facility = corrected_facility
     
     try:
-        location = location.replace("’","") # 89,99,275
+        facility = facility.replace("’","") # 89,99,275
     except ValueError:
         pass
 
-    return location
+    return facility
 
 
 

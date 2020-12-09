@@ -5,7 +5,7 @@ import numpy as np
 
 
 def plot(DATES, CASES_PER_DAY, RUNNING_TOTALS, 
-        LOCATIONS,LOC_SHARES,
+        FACILITIES,LOC_SHARES,
         DEPTS,DEPT_SHARES):
 
     fig = plt.figure(figsize=(10,7))
@@ -23,7 +23,7 @@ def plot(DATES, CASES_PER_DAY, RUNNING_TOTALS,
     ax1.set_ylabel("Running Total")
 
     ax2 = fig.add_subplot(spec[0,1])
-    ax2.pie(LOC_SHARES,labels=LOCATIONS)
+    ax2.pie(LOC_SHARES,labels=FACILITIES)
     
     ax3 = fig.add_subplot(spec[1,1])
     ax3.pie(DEPT_SHARES,labels=DEPTS)

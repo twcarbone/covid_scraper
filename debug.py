@@ -12,7 +12,7 @@ def print_cases(covid_data,option):
             558: Kings Highway
             559: Groton
             """
-            print(f"{case.case_num}:\t{case.location}")
+            print(f"{case.case_num}:\t{case.facility}")
      
 
         if option == 2:

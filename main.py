@@ -57,21 +57,22 @@ dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
 
 daily_running = get_running_totals(covid_data,print_flag=False)
 
-locations,location_counts,location_shares = bucketize_cases(covid_data,'location',False)
+facilities,facility_counts,facility_shares = bucketize_cases(covid_data,'facility',False)
 depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
 
-top_locations,top_loc_shares = get_top_shares(locations,location_shares,6,False)
+top_facilities,top_facility_shares = get_top_shares(facilities,facility_shares,6,False)
 top_depts,top_dept_shares = get_top_shares(depts,dept_shares,50,False)
 
+"""
 conn = connect_to_psql_db("eb_covid")
 for case in covid_data:
-  add_case_to_db(conn,case.case_num,case.date_str,case.location,case.dept)
+  add_case_to_db(conn,case.case_num,case.date_str,case.facility,case.dept)
 
 conn.close()
-
-
 """
+
+
 plot(dates,daily_totals,daily_running,
-     top_locations,top_loc_shares,
+     top_facilities,top_facility_shares,
      top_depts,top_dept_shares)
-"""
+
