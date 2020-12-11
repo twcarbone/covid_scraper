@@ -1,6 +1,8 @@
 ## **COVID Scraper**
 #### Overview
 This project retrieves data from the Electric Boat [EBLanding](https://eblanding.com/covid-19-case-report-summary/) COVID-19 Case Report Summary website and plots it in interesting ways.
+#### Execution
+Run `python3 main.py` from your terminal.
 #### Methods
 `main.py` is the driver that calls all functions.
 
@@ -13,4 +15,5 @@ This project retrieves data from the Electric Boat [EBLanding](https://eblanding
 `plot_data.py` plots the data using the 'matplotlib' library.
 
 `postgres_db.py` is currently in testing, and adds COVID case data to a PostgreSQL database.
-
+#### Output
+![Example Output](figure1.png?raw=true)
