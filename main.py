@@ -41,27 +41,69 @@ from slice_data import *
 from plot_data import *
 from postgres_db import *
 from debug import print_cases
+from log import setup_logger
+import logging
 
 
+"""
+The following code sets up the logger.
+
+First, we create a specific logger that logs information from "__name__". Next, we
+set the level of the logger so that it logs all INFO log messages. We then create a
+file handler that receives the log messages and add it to our logger. Lastly, we
+format the log messages and apply the formatting to the file handler.
+"""
+logger = logging.getLogger(__name__)  # create logger
+logger.setLevel(logging.INFO) # set logging level
+
+file_handler = logging.FileHandler('covid.log') # creat file handler
+logger.addHandler(file_handler) # add the file handler to the logger
+
+formatter = logging.Formatter('%(asctime)s : %(name)s : %(message)s')
+file_handler.setFormatter(formatter)  # apply logging format to file handler
+
+
+logger.info("*************** begin script ***************")
+
+# create soup object from html
 url = 'https://eblanding.com/covid-19-case-report-summary/'
 soup = get_soup(url,print_flag=False)
+logger.info('create soup object from html')
 
+# parse all <pre> html tags
 covid_data_pre = parse_html('pre',soup)
-covid_data_p = parse_html('p',soup) # October 19th & 23rd
+logger.info("parse all <pre> html tags")
 
+# parse all <p> html tags
+covid_data_p = parse_html('p',soup) # October 19th & 23rd
+logger.info("parse all <p> html tags")
+
+# merge <pre> and <p> lists
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
+logger.info("merge <pre> and <p> lists")
 
 # print_cases(covid_data,1)
 
+# return list of dates that registered cases and the total cases per day
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
+logger.info("return list of dates that registered cases and the total cases per day")
 
+# return list of daily running total
 daily_running = get_running_totals(covid_data,print_flag=False)
+logger.info("return list of daily running total")
 
+# return list of facilities and percentage of cases at each facility
 facilities,facility_counts,facility_shares = bucketize_cases(covid_data,'facility',False)
-depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
+logger.info("return list of facilities and percentage of cases at each facility")
 
+# return list of depts and percentage of cases at each facility
+depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
+logger.info("return list of depts and percentage of cases at each facility")
+
+# get the top n facilities and depts, put all else in 'other'
 top_facilities,top_facility_shares = get_top_shares(facilities,facility_shares,6,False)
 top_depts,top_dept_shares = get_top_shares(depts,dept_shares,50,False)
+logger.info("get the top n facilities and depts, put all else in 'other'")
 
 """
 conn = connect_to_psql_db("eb_covid")
@@ -71,8 +113,11 @@ for case in covid_data:
 conn.close()
 """
 
-
+# plot the data
 plot(dates,daily_totals,daily_running,
      top_facilities,top_facility_shares,
      top_depts,top_dept_shares)
+logger.info("plot the data")
 
+
+logger.info("*************** end script ***************")
