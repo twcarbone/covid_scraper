@@ -41,26 +41,10 @@ from slice_data import *
 from plot_data import *
 from postgres_db import *
 from debug import print_cases
-from log import setup_logger
-import logging
+from log import logger_setup
 
 
-"""
-The following code sets up the logger.
-
-First, we create a specific logger that logs information from "__name__". Next, we
-set the level of the logger so that it logs all INFO log messages. We then create a
-file handler that receives the log messages and add it to our logger. Lastly, we
-format the log messages and apply the formatting to the file handler.
-"""
-logger = logging.getLogger(__name__)  # create logger
-logger.setLevel(logging.INFO) # set logging level
-
-file_handler = logging.FileHandler('covid.log') # creat file handler
-logger.addHandler(file_handler) # add the file handler to the logger
-
-formatter = logging.Formatter('%(asctime)s : %(name)s : %(message)s')
-file_handler.setFormatter(formatter)  # apply logging format to file handler
+logger = logger_setup("main.py")
 
 
 logger.info("*************** begin script ***************")

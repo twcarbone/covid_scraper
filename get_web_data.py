@@ -1,19 +1,26 @@
 import requests
 from bs4 import BeautifulSoup as bs
 from covid_classes import covid_case
+from log import logger_setup
+
+logger = logger_setup("get_web_data.py")
+
 
 def get_soup(url,print_flag=False):
     """
 
     """
     page = requests.get(url)
+    logger.info(f"HTTP status is: {page.status_code}")
     soup = bs(page.content, 'html.parser')
 
     if print_flag:
         article = soup.find('article')
         print(article.prettify())
 
+    logger.info("soup object successfully returned")
     return soup
+    
 
 
 def parse_html(tag,soup):
