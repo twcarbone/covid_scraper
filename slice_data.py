@@ -1,4 +1,5 @@
-
+import statistics as stats
+import numpy as np
 
 
 def merge_day_list(list1,list2):
@@ -156,5 +157,34 @@ def get_top_shares(attr_list,attr_shares,n,print_flag=False):
 
 
 
+def get_running_average(data,n_day):
+  """
+  Returns a dict containing a list the same length as 'data' and the argument
+  'n_day'. The first n-1 days are equal to the first n-1 entries from 'data'. All
+  remaining data points are the n-day running average.
 
+  Example: data = [5,8,1,6,9,4,5,6,6,2,8] n_day = 4
+
+    data_running_avg = [5,8,1,?,?,?,...] index =  0 1 2 3 4 5 ...
+                            ^
+                            if i < n_days-1:  # (i.e., less than 3)
+                              # don't compute the avg
+                            else:
+                              # get an n_day slice using [i-n_day+1:i]
+  """
+  data_running_avg = []
+  for i,value in enumerate(data):
+    if i < n_day-1:
+      data_running_avg.append(np.nan)
+    else:
+      data_slice = data[i-n_day+1:i]
+      data_slice_avg = stats.mean(data_slice)
+      data_running_avg.append(data_slice_avg)
+  
+  running_avg_dict = {
+    "n_day" : n_day,
+    "data_running_avg" : data_running_avg
+  }
+
+  return running_avg_dict
 

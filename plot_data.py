@@ -17,9 +17,14 @@ def set_y_tick_range(y_data,interval):
   return y_ticks
 
 
-def plot(DATES, CASES_PER_DAY, RUNNING_TOTALS, 
+def plot(DATES, CASES_PER_DAY, CASES_PER_DAY_AVG_DICT, 
+        RUNNING_TOTALS, 
         FACILITIES,LOC_SHARES,
         DEPTS,DEPT_SHARES):
+
+    # deconstruct dictionary of running average info
+    CASES_PER_DAY_AVG = CASES_PER_DAY_AVG_DICT["data_running_avg"]
+    N_DAY_AVG = CASES_PER_DAY_AVG_DICT["n_day"]
 
     fig = plt.figure(figsize=(10,7))
     # fig,ax = plt.subplots(2,2,figsize=(10,7))
@@ -29,10 +34,12 @@ def plot(DATES, CASES_PER_DAY, RUNNING_TOTALS,
 
     # plot cases per day
     ax0 = fig.add_subplot(spec[0,0])
-    ax0.plot(DATES,CASES_PER_DAY,marker="o")
+    ax0.plot(DATES,CASES_PER_DAY,marker='o')
+    ax0.plot(DATES,CASES_PER_DAY_AVG,color='r')
     ax0.set_ylabel("Cases Per Day")
     ax0.set_yticks(set_y_tick_range(CASES_PER_DAY,10))
     ax0.grid(which='major',axis='y')
+    ax0.legend(["Cases per Day",f"{N_DAY_AVG}-Day Running Average"])
     logger.info("plot cases per day")
 
     # plot running total

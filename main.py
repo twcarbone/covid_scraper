@@ -89,6 +89,10 @@ top_facilities,top_facility_shares = get_top_shares(facilities,facility_shares,6
 top_depts,top_dept_shares = get_top_shares(depts,dept_shares,50,False)
 logger.info("get the top n facilities and depts, put all else in 'other'")
 
+# get the running average of cases per day
+daily_totals_avg_dict = get_running_average(daily_totals,10)
+logger.info("get the running average of cases per day")
+
 """
 conn = connect_to_psql_db("eb_covid")
 for case in covid_data:
@@ -98,7 +102,8 @@ conn.close()
 """
 
 # plot the data
-plot(dates,daily_totals,daily_running,
+plot(dates,daily_totals,daily_totals_avg_dict,
+     daily_running,
      top_facilities,top_facility_shares,
      top_depts,top_dept_shares)
 logger.info("plot the data")
