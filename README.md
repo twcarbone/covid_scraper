@@ -8,18 +8,18 @@ Run `python3 main.py` from your terminal.
 #### Methods
 `main.py` is the driver that calls all functions.
 
-`get_web_data.py` uses the `requests` and `beautifulsoup` libraries to make the http
+`scrape.py` uses the `requests` and `beautifulsoup` libraries to make the http
 request to the URL and parse the html.
 
-`covid_classes.py` contains a single class that is a template for one COVID-19 case
+`covid_case.py` contains a single class that is a template for one COVID-19 case
 at Electric Boat.
 
-`slice_data.py` contains functions that organize the COVID case data by facility,
+`analyze.py` contains functions that organize the COVID case data by facility,
 department, etc.
 
-`plot_data.py` plots the data using the `matplotlib` library.
+`plot.py` plots the data using the `matplotlib` library.
 
-`postgres_db.py` is currently in testing, and adds COVID case data to a PostgreSQL
+`db.py` is currently in testing, and adds COVID case data to a PostgreSQL
 database.
 
 `log.py` sets up a logger that logs to `covid.log`, which is not under version
