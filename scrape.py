@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
-from covid_classes import covid_case
+from covid_case import covid_case
 from log import logger_setup
 
 logger = logger_setup("get_web_data.py")

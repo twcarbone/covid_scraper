@@ -36,10 +36,10 @@ Note: to be able to see a figure from wsl using matplotlib:
 """
 
 
-from get_web_data import *
-from slice_data import *
-from plot_data import *
-from postgres_db import *
+from scrape import *
+from analyze import *
+from plot import *
+from db import *
 from debug import print_cases
 from log import logger_setup
 
