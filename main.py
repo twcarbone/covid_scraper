@@ -66,7 +66,7 @@ logger.info("parse all <p> html tags")
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 logger.info("merge <pre> and <p> lists")
 
-# print_cases(covid_data,1)
+print_cases(covid_data,3)
 
 # return list of dates that registered cases and the total cases per day
 dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
@@ -99,7 +99,7 @@ for case in covid_data:
   add_case_to_db(conn,case.case_num,case.date_str,case.facility,case.dept)
 
 conn.close()
-"""
+
 
 # plot the data
 plot(dates,daily_totals,daily_totals_avg_dict,
@@ -107,6 +107,6 @@ plot(dates,daily_totals,daily_totals_avg_dict,
      top_facilities,top_facility_shares,
      top_depts,top_dept_shares)
 logger.info("plot the data")
-
+"""
 
 logger.info("*************** end script ***************")

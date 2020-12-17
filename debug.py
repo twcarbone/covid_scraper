@@ -37,7 +37,7 @@ def print_cases(covid_data,option):
             """
 
             """
-            print(f"{case.case_str[0:75]} -- {case.dept}")
+            print(f"{case.case_num} : {case.bldg}")
 
 
         elif option == 4:
