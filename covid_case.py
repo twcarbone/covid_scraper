@@ -1,4 +1,5 @@
 from datetime import datetime
+import numpy as np
 
 class covid_case:
     """
@@ -15,13 +16,14 @@ class covid_case:
     def __init__(self,date_str,case_str):
         self.date_str = date_str
         self.date_obj = datetime.strptime(self.date_str,'%B %d, %Y')
+        self.date_obj = self.date_obj.replace(hour=0,minute=0,second=0)
         self.case_str = case_str
         self.case_num = int(case_str[case_str.index("#")+1:case_str.index(":")])
         self.facility = get_facility(self.case_str, self.case_num)
         self.dept = get_dept(self.case_str)
         self.bldg = get_bldg(self.case_str)
         self.last_day = get_last_day(self.case_str, self.case_num)
-        # self.last_day_obj = datetime.strptime(self.last_day,'%B %d, %Y')
+        self.day_delta = compute_day_delta(self.date_obj,self.last_day)
 
 
 def get_facility(case_str,case_num):
@@ -150,4 +152,20 @@ def get_last_day(case_str,case_num):
         last_day = datetime.strptime(last_day,'%B %d, %Y')
     
     return last_day
+
+
+
+def compute_day_delta(report_date,last_day):
+    """
+    Compute the number of days between the employees last day of work and the day on
+    which they were reported to have COVID.
+    """
+
+    if last_day == "N/A":
+        day_delta = np.nan
+    else:
+        day_delta = report_date - last_day
+        day_delta = day_delta.days
+
+    return day_delta
 

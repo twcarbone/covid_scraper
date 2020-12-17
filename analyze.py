@@ -131,7 +131,8 @@ def bucketize_cases(covid_data,attr,print_flag=False):
         for i,attr in enumerate(unique_attrs_list):
             # Quonset Point: 120/396 (30.3 %)
             print(f"{unique_attrs_list[i]}: ",end="") # Quonset Point: 
-            print(f"{unique_attrs_count_list[i]}/{sum(unique_attrs_count_list)}",end="") # 120/396
+            print(f"{unique_attrs_count_list[i]}/" 
+                  + f"{sum(unique_attrs_count_list)}",end="") # 120/396
             print(f" ({round(attr_shares[i],2)} %)") # (30.3 %)
 
     return unique_attrs_list, unique_attrs_count_list, attr_shares

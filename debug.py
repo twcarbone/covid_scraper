@@ -37,7 +37,8 @@ def print_cases(covid_data,option):
             """
 
             """
-            print(f"{case.case_num} : {case.bldg}")
+            print(f"{case.case_num} : {case.date_obj} - {case.last_day}"
+                 + f" = {case.day_delta}")
 
 
         elif option == 4:
