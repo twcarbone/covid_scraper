@@ -4,9 +4,9 @@ import numpy as np
 
 def merge_day_list(list1,list2):
     """
-    list1 and list2 are lists of covid_case classes. list1 is small, and list2 is the 
-    'master' list. Merge list1 into list2 at its chronoligcal location by date. Return
-    list2.
+    list1 and list2 are lists of covid_case classes. list1 is small, and list2 is the
+    'master' list. Merge list1 into list2 at its chronoligcal location by date.
+    Return list2.
     """
     for case1 in list1:
         for i,case2 in enumerate(list2):
@@ -35,8 +35,8 @@ def get_daily_totals(covid_data,print_flag=False):
     # create an empty dictionary
     daily_totals = {}
 
-    # for each case in the covid_data list, if the date associated with the case is not in
-    # the dictionary already, add it; otherwise increment the daily total by 1
+    # for each case in the covid_data list, if the date associated with the case is
+    # not in the dictionary already, add it; otherwise increment the daily total by 1
     for case in covid_data:
         if not(case.date_obj in daily_totals):
             daily_totals[case.date_obj] = 1
@@ -75,8 +75,8 @@ def get_running_totals(covid_data,print_flag=False):
         elif case.date_str == covid_data[i-1].date_str:
             continue
         else:
-            # if the iterator is on a new date, then the previous date was the last date in
-            # a day, and its case number is the running total for that day.
+            # if the iterator is on a new date, then the previous date was the last
+            # date in a day, and its case number is the running total for that day.
             dates.append(covid_data[i-1].date_str)
             daily_running.append(covid_data[i-1].case_num)
 
@@ -131,7 +131,8 @@ def bucketize_cases(covid_data,attr,print_flag=False):
         for i,attr in enumerate(unique_attrs_list):
             # Quonset Point: 120/396 (30.3 %)
             print(f"{unique_attrs_list[i]}: ",end="") # Quonset Point: 
-            print(f"{unique_attrs_count_list[i]}/{sum(unique_attrs_count_list)}",end="") # 120/396
+            print(f"{unique_attrs_count_list[i]}/" 
+                  + f"{sum(unique_attrs_count_list)}",end="") # 120/396
             print(f" ({round(attr_shares[i],2)} %)") # (30.3 %)
 
     return unique_attrs_list, unique_attrs_count_list, attr_shares
@@ -180,11 +181,6 @@ def get_running_average(data,n_day):
       data_slice = data[i-n_day+1:i]
       data_slice_avg = stats.mean(data_slice)
       data_running_avg.append(data_slice_avg)
-  
-  running_avg_dict = {
-    "n_day" : n_day,
-    "data_running_avg" : data_running_avg
-  }
 
-  return running_avg_dict
+  return data_running_avg
 

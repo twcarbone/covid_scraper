@@ -17,47 +17,47 @@ def set_y_tick_range(y_data,interval):
   return y_ticks
 
 
-def plot(DATES, CASES_PER_DAY, CASES_PER_DAY_AVG_DICT, 
-        RUNNING_TOTALS, 
-        FACILITIES,LOC_SHARES,
-        DEPTS,DEPT_SHARES):
-
-    # deconstruct dictionary of running average info
-    CASES_PER_DAY_AVG = CASES_PER_DAY_AVG_DICT["data_running_avg"]
-    N_DAY_AVG = CASES_PER_DAY_AVG_DICT["n_day"]
+def plot(dates,
+         cases_per_day,
+         N_day_avg,
+         cases_per_day_avg,
+         running_totals, 
+         top_N_facilities,
+         count_per_top_N_facility,
+         top_N_depts,
+         count_per_top_N_depts):
 
     fig = plt.figure(figsize=(10,7))
-    # fig,ax = plt.subplots(2,2,figsize=(10,7))
     spec = gridspec.GridSpec(ncols=2,nrows=2,width_ratios=[2,1])
 
-    fig.suptitle(f"Number of COVID Cases at Electric Boat: {RUNNING_TOTALS[-1]}")
+    fig.suptitle(f"Number of COVID Cases at Electric Boat: {running_totals[-1]}")
 
-    # plot cases per day
+    # plot cases per day and running average
     ax0 = fig.add_subplot(spec[0,0])
-    ax0.plot(DATES,CASES_PER_DAY,marker='o')
-    ax0.plot(DATES,CASES_PER_DAY_AVG,color='r')
+    ax0.plot(dates,cases_per_day,marker='o')
+    ax0.plot(dates,cases_per_day_avg,color='r')
     ax0.set_ylabel("Cases Per Day")
-    ax0.set_yticks(set_y_tick_range(CASES_PER_DAY,10))
+    ax0.set_yticks(set_y_tick_range(cases_per_day,10))
     ax0.grid(which='major',axis='y')
-    ax0.legend(["Cases per Day",f"{N_DAY_AVG}-Day Running Average"])
+    ax0.legend(["Cases per Day",f"{N_day_avg}-Day Running Average"])
     logger.info("plot cases per day")
 
     # plot running total
     ax1 = fig.add_subplot(spec[1,0])
-    ax1.plot(DATES,RUNNING_TOTALS,marker="o")
+    ax1.plot(dates,running_totals,marker="o")
     ax1.set_ylabel("Running Total")
-    ax1.set_yticks(set_y_tick_range(RUNNING_TOTALS,100))
+    ax1.set_yticks(set_y_tick_range(running_totals,100))
     ax1.grid(which='major',axis='y')
     logger.info("plot running total")
 
-    # plot cases per facility as a pie chart
+    # plot cases by facility as a pie chart
     ax2 = fig.add_subplot(spec[0,1])
-    ax2.pie(LOC_SHARES,labels=FACILITIES)
+    ax2.pie(count_per_top_N_facility,labels=top_N_facilities)
     logger.info("plot cases per facility pie chart")
 
     # plot cases by department as pie chart
     ax3 = fig.add_subplot(spec[1,1])
-    ax3.pie(DEPT_SHARES,labels=DEPTS)
+    ax3.pie(count_per_top_N_depts,labels=top_N_depts)
     logger.info("plot cases per dept pie chart")
 
     plt.xticks(rotation=45)
