@@ -197,6 +197,25 @@ def fit_SIR(dates,totals):
     <scipython.com/book/chapter-8-scipy/additional-examples/the-sir-epidemic-model/>
     """
 
+    def deriv(y, t, N, beta, gamma):
+        """
+        set up ODE.
+        """
+        (S, I, R) = y
+        dSdt = -beta * S * I / N
+        dIdt = beta * S * I / N - gamma * I
+        dRdt = gamma * I
+
+        return dSdt,dIdt,dRdt
+    
+
+    def find_avg_delta(actual,model):
+        """
+
+        """
+        
+
+
     # first, make a range of int's to correspond to the dates
     dates_int = range(len(dates))
 
@@ -205,8 +224,11 @@ def fit_SIR(dates,totals):
     for n in totals:
         totals_norm.append(n-88)
 
+    # make a list of time points (in days)
+    t = np.linspace(0, 365*2, 365*2-1)
+
     # estimate total population, N
-    N = 6000
+    N = range(4000,7500,500)
 
     # estimate initial number of infected and recovered individuals, I_0, R_0
     I_0 = 1
@@ -215,38 +237,14 @@ def fit_SIR(dates,totals):
     # everyone else, S_0, is susceptible
     S_0 = N - I_0 - R_0
 
-    # estimate contact rate, beta, mean recovery rate, gamma (in 1/days)
-    beta = 0.13
-    gamma = 0.09
-    beta_grid = np.arange(0.1,0.2,0.01)
-    gamma_grid = np.arange(0.05,0.15,0.01)
-
-    # make a list of time points (in days)
-    t = np.linspace(0, 365*2, 365*2-1)
-
-    # define the SIR model differential eqs
-    def deriv(y, t, N, beta, gamma):
-        (S, I, R) = y
-        dSdt = -beta * S * I / N
-        dIdt = beta * S * I / N - gamma * I
-        dRdt = gamma * I
-        return dSdt,dIdt,dRdt
-
-    # initial conditions
+    # compile into tuple of initial conditions
     y_0 = (S_0, I_0, R_0)
 
-    # integrate the SIR equations over t
-    I_grid = [[],[]]
-    for i in range(len(beta_grid)):
-        ret = odeint(deriv, y_0, t, args=(N, beta_grid[i], gamma))
-        S, I, R = ret.T
-        I_grid[0].append(I)
-    
-    for i in range(len(gamma_grid)):
-        ret = odeint(deriv, y_0, t, args=(N, beta, gamma_grid[i]))
-        S, I, R = ret.T
-        I_grid[1].append(I)
+    # estimate contact rate, beta, and mean recovery rate, gamma (in 1/days)
+    beta = np.arange(0.13,0.21,0.01)
+    gamma = np.arrange(0.09,0.16,0.01)
 
+    # integrate the SIR equations over t
     ret = odeint(deriv, y_0, t, args=(N, beta, gamma))
     S, I, R = ret.T
 
@@ -257,26 +255,6 @@ def fit_SIR(dates,totals):
     x_max = 400
     y_min = 0
     y_max = 2000
-
-    ax = fig.add_subplot(spec[0,0])
-    ax.plot(dates_int,totals_norm,marker="o")
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-    leg_strs = ["Total cases"]
-    for b,I in enumerate(I_grid[0]):
-        leg_strs.append(f"Contact Rate, beta = {round(beta_grid[b],2)}" )
-        ax.plot(t,I)
-    ax.legend(leg_strs)
-    
-    ax = fig.add_subplot(spec[1,0])
-    ax.plot(dates_int,totals_norm,marker="o")
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-    leg_strs = ["Total cases"]
-    for g,I in enumerate(I_grid[1]):
-        leg_strs.append(f"Recovery Rate, gamma = {round(gamma_grid[g],2)}" )
-        ax.plot(t,I)
-    ax.legend(leg_strs)
 
     ax = fig.add_subplot(spec[3,0])
     ax.plot(dates_int,totals_norm,marker="o")
