@@ -42,7 +42,7 @@ from plot import *
 from db import *
 from debug import print_cases
 from log import logger_setup
-
+from all_covid_data import all_covid_data
 
 logger = logger_setup("main.py")
 
@@ -66,32 +66,9 @@ logger.info("parse all <p> html tags")
 covid_data = merge_day_list(covid_data_p,covid_data_pre)
 logger.info("merge <pre> and <p> lists")
 
-print_cases(covid_data,3)
+# print_cases(covid_data,3)
 
-# return list of dates that registered cases and the total cases per day
-dates,daily_totals = get_daily_totals(covid_data,print_flag=False)
-logger.info("return list of dates that registered cases and the total cases per day")
-
-# return list of daily running total
-daily_running = get_running_totals(covid_data,print_flag=False)
-logger.info("return list of daily running total")
-
-# return list of facilities and percentage of cases at each facility
-facilities,facility_counts,facility_shares = bucketize_cases(covid_data,'facility',False)
-logger.info("return list of facilities and percentage of cases at each facility")
-
-# return list of depts and percentage of cases at each facility
-depts,dept_counts,dept_shares = bucketize_cases(covid_data,'dept',False)
-logger.info("return list of depts and percentage of cases at each facility")
-
-# get the top n facilities and depts, put all else in 'other'
-top_facilities,top_facility_shares = get_top_shares(facilities,facility_shares,6,False)
-top_depts,top_dept_shares = get_top_shares(depts,dept_shares,50,False)
-logger.info("get the top n facilities and depts, put all else in 'other'")
-
-# get the running average of cases per day
-daily_totals_avg_dict = get_running_average(daily_totals,10)
-logger.info("get the running average of cases per day")
+all_covid_data = all_covid_data(covid_data)
 
 """
 conn = connect_to_psql_db("eb_covid")
@@ -99,14 +76,18 @@ for case in covid_data:
   add_case_to_db(conn,case.case_num,case.date_str,case.facility,case.dept)
 
 conn.close()
-
+"""
 
 # plot the data
-plot(dates,daily_totals,daily_totals_avg_dict,
-     daily_running,
-     top_facilities,top_facility_shares,
-     top_depts,top_dept_shares)
+plot(all_covid_data.report_date_list,
+     all_covid_data.daily_total_list,
+     all_covid_data.N_day_avg,
+     all_covid_data.N_day_running_avg,
+     all_covid_data.running_total_list, 
+     all_covid_data.top_N_facility_list,
+     all_covid_data.count_per_top_N_facility,
+     all_covid_data.top_N_dept_list,
+     all_covid_data.count_per_top_N_dept)
 logger.info("plot the data")
-"""
 
 logger.info("*************** end script ***************")

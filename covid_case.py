@@ -131,7 +131,8 @@ def get_last_day(case_str,case_num):
         235 : "N/A",
         239 : "N/A",
         331 : "N/A",
-        700 : "December 3, 2020"
+        700 : "December 3, 2020",
+        798 : "N/A"
     }
 
     last_day = "___LastDayFailed___"
@@ -149,7 +150,11 @@ def get_last_day(case_str,case_num):
             last_day = corrected_last_day
 
     if last_day != "N/A":
-        last_day = datetime.strptime(last_day,'%B %d, %Y')
+        try:
+            last_day = datetime.strptime(last_day,'%B %d, %Y')
+        except ValueError:
+            print(f"Failed of case {case_num}: {last_day} is " 
+                  + "not of the form 'Month Day, Year'")
     
     return last_day
 
