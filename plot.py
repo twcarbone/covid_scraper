@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import gridspec
 import math
+from datetime import datetime as dt
 from log import logger_setup
 
 logger = logger_setup("plot_data.py")
@@ -30,7 +31,10 @@ def plot(dates,
     fig = plt.figure(figsize=(10,7))
     spec = gridspec.GridSpec(ncols=2,nrows=2,width_ratios=[2,1])
 
-    fig.suptitle(f"Number of COVID Cases at Electric Boat: {running_totals[-1]}")
+    today = dt.today()
+    fig_title = "Number of COVID Cases at Electric Boat as of "\
+                + today.strftime("%B %d, %Y") + ": " + str(running_totals[-1])
+    fig.suptitle(fig_title)
 
     # plot cases per day and running average
     ax0 = fig.add_subplot(spec[0,0])
