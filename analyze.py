@@ -318,10 +318,8 @@ def fit_SIR(totals):
         return dSdt,dIdt,dRdt
     
 
-    # next, zero-normalize the data (beceause the COVID counter starts as case 88)
-    totals_norm = []
-    for n in totals:
-        totals_norm.append(n-88)
+    # zero-normalize the data
+    totals_norm = [totals[n]-totals[0] for n in range(len(totals))]
 
     # make a list of time points (in days)
     t = range(0,400)
@@ -349,7 +347,7 @@ def fit_SIR(totals):
         ax.set_ylim(y_min, y_max)
 
     # loop thru each population, beta, and gamma estimate
-    best_worst_delta = 99999
+    best_low_delta = 99999
     for n in N_rng:
 
         # everyone else, S_0, is susceptible
@@ -373,18 +371,18 @@ def fit_SIR(totals):
                 # compute a list of deltas between the actual data and the modeled
                 # data, then compute its average
                 abs_deltas = [abs(totals_norm[i]-I[i]) for i in range(len(I_slc))]
-                worst_delta = max(abs_deltas)
+                low_delta = max(abs_deltas)
                 
                 # ax.plot(t,I)
 
                 # compare the avg that was just calculated to the best avg that has
-                # been calcualted  for the entire run and assign new "winners", if
+                # been calcualted for the entire run and assign new "winners", if
                 # appropriate
-                if worst_delta < best_worst_delta:
+                if low_delta < best_low_delta:
                     params = (n, b, g)
                     I_best = I
-                    best_deltas = abs_deltas
-                    best_worst_delta = worst_delta
+                    best_low_deltas = abs_deltas
+                    best_low_delta = low_delta
 
     if pf:
         ax.plot(range(len(totals_norm)),totals_norm,marker="o",color='r')
