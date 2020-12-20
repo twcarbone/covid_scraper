@@ -3,6 +3,7 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+import datetime
 
 
 def merge_day_list(list1,list2):
@@ -89,6 +90,67 @@ def get_running_totals(covid_data,print_flag=False):
             print(f"{date}: {daily_running[i]}")
 
     return daily_running
+
+
+def fill_data(r_dates,daily_running):
+    """
+    1.  loop thru r_dates
+    2.  if a date is skipped, insert an entry for that date in both r_dates and
+        daily_running
+    3.  fill the new entry in daily_running with lineraly interpolated value
+    4.  complete for every missing date from r_dates[0] thru r_dates[-1]
+    """
+    pf = True # flag for printing to console
+
+    r_dates_filled = []
+    daily_running_filled = []
+
+    for i in range(len(r_dates)):
+        
+        # begin by putting the current reported date onto the new list
+        r_dates_filled.append(r_dates[i])
+        daily_running_filled.append(daily_running[i])
+
+        if r_dates[i] == r_dates[-1]:
+            # catch the final case; do nothing
+            pass
+        else:
+            # dt is the number of days between case i and case i+1
+            dt = r_dates[i+1] - r_dates[i]
+            dt = int(dt.days)
+
+            # if there is no jump, then we are OK and move to the next report date
+            if dt == 1:
+                pass
+            else:
+                # this algorithm is a little complicated, so this is an example to
+                # illustrate what it's doing
+                #
+                # pretend i is June 3, 2020 and i+1 is June 7, 2020
+                # >>> dt = 4
+                #
+                # we want to linearally interpolate at integer days, so iterate on
+                # range(1,dt), making [1,2,3]. the "x" range for interpolation are
+                # [0,4]. the "y" values corresponding to 0 and 4 are the case totals
+                # from June 3 and June 7. by interpolating on "x" equal to 1,2,3 we
+                # get the total for June 4, June 5, and June 6
+                for x in range(1,dt):
+                    # incriment one day
+                    r_dates_filled.append(r_dates[i]+datetime.timedelta(days=x))
+
+                    # linearly interpolate
+                    x_range = [0, dt]
+                    y_range = daily_running[i], daily_running[i+1]
+                    new_case = np.interp(x,x_range,y_range)
+                    daily_running_filled.append(new_case)
+    
+    # test print
+    if pf:
+        for i in range(len(r_dates)):
+            print(f"{r_dates[i]}: {daily_running[i]} -- "
+                + f"{r_dates_filled[i]}: {daily_running_filled[i]}")
+
+    return r_dates_filled, daily_running_filled
 
 
 
@@ -213,7 +275,7 @@ def fit_SIR(dates,totals):
         """
 
         """
-        
+
 
 
     # first, make a range of int's to correspond to the dates
