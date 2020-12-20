@@ -40,10 +40,8 @@ for case in covid_data:
 
 conn.close()
 """
-az.fit_SIR(all_covid_data.report_date_list,
-           all_covid_data.running_total_list)
 
-"""
+
 # plot the data
 plot(all_covid_data.report_date_list,
      all_covid_data.daily_total_list,
@@ -53,7 +51,11 @@ plot(all_covid_data.report_date_list,
      all_covid_data.top_N_facility_list,
      all_covid_data.count_per_top_N_facility,
      all_covid_data.top_N_dept_list,
-     all_covid_data.count_per_top_N_dept)
+     all_covid_data.count_per_top_N_dept,
+     all_covid_data.report_date_list_corr,
+     all_covid_data.N_day_running_avg2,
+     all_covid_data.sir_data,
+     all_covid_data.sir_params)
 logger.info("plot the data")
-"""
+
 logger.info("*************** end script ***************")

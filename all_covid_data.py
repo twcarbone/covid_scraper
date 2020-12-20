@@ -12,8 +12,8 @@ class all_covid_data():
         self.running_total_list = az.get_running_totals(covid_data,print_flag=False)
 
         self.report_date_list_corr,\
-        self.daily_total_list_corr = az.fill_data(self.report_date_list,\
-                                                  self.daily_total_list)
+        self.running_total_list_corr = az.fill_data(self.report_date_list,\
+                                                    self.running_total_list)
 
         self.facility_list,\
         self.count_per_facility,\
@@ -38,3 +38,8 @@ class all_covid_data():
         self.N_day_avg = 10
         self.N_day_running_avg = az.get_running_average(self.daily_total_list,\
                                                         self.N_day_avg)
+
+        self.N_day_running_avg2 = az.get_running_average(self.running_total_list_corr,15)
+
+        self.sir_data,\
+        self.sir_params = az.fit_SIR(self.N_day_running_avg2)

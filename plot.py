@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import gridspec
 import math
-from datetime import datetime as dt
+import datetime as dt
 from log import logger_setup
 
 logger = logger_setup("plot_data.py")
@@ -26,12 +26,16 @@ def plot(dates,
          top_N_facilities,
          count_per_top_N_facility,
          top_N_depts,
-         count_per_top_N_depts):
+         count_per_top_N_depts,
+         dates_corr,
+         running_totals_corr,
+         sir_data,
+         sir_params):
 
-    fig = plt.figure(figsize=(10,7))
-    spec = gridspec.GridSpec(ncols=2,nrows=2,width_ratios=[2,1])
+    fig = plt.figure(figsize=(12,9))
+    spec = gridspec.GridSpec(ncols=2,nrows=3,width_ratios=[2,1])
 
-    today = dt.today()
+    today = dt.datetime.today()
     fig_title = "Number of COVID Cases at Electric Boat as of "\
                 + today.strftime("%B %d, %Y") + ": " + str(running_totals[-1])
     fig.suptitle(fig_title)
@@ -64,6 +68,16 @@ def plot(dates,
     ax3.pie(count_per_top_N_depts,labels=top_N_depts)
     logger.info("plot cases per dept pie chart")
 
+    # plot projected SIR model
+    sir_dates = [dates_corr[0]+dt.timedelta(days=i) for i in range(len(sir_data))]
+    sir_data_88 = [sir_data[i]+88 for i in range(len(sir_data))]
+    ax4 = fig.add_subplot(spec[2,0])
+    ax4.set_ylim(0,1000)
+    ax4.plot(dates_corr, running_totals_corr,marker='o',color='r')
+    ax4.plot(sir_dates, sir_data_88, color='black')
+    ax4.set_ylabel("Running Total")
+    ax4.grid(which='major',axis='y')
+    ax4.legend(["15-Day Running Average","SIR Disease Spread Projections"])
     plt.xticks(rotation=45)
     plt.gcf().autofmt_xdate()
 

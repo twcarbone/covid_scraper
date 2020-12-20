@@ -92,6 +92,7 @@ def get_running_totals(covid_data,print_flag=False):
     return daily_running
 
 
+
 def fill_data(r_dates,daily_running):
     """
     1.  loop thru r_dates
@@ -100,7 +101,7 @@ def fill_data(r_dates,daily_running):
     3.  fill the new entry in daily_running with lineraly interpolated value
     4.  complete for every missing date from r_dates[0] thru r_dates[-1]
     """
-    pf = True # flag for printing to console
+    pf = False # flag for printing to console
 
     r_dates_filled = []
     daily_running_filled = []
@@ -241,7 +242,7 @@ def get_running_average(data,n_day):
   data_running_avg = []
   for i,value in enumerate(data):
     if i < n_day-1:
-      data_running_avg.append(np.nan)
+      data_running_avg.append(value)
     else:
       data_slice = data[i-n_day+1:i]
       data_slice_avg = stats.mean(data_slice)
@@ -251,13 +252,15 @@ def get_running_average(data,n_day):
 
 
 
-def fit_SIR(dates,totals):
+def fit_SIR(totals):
     """
     Fit a Susceptible, Infected, Recovered (SIR) curve to the data.
 
     Credit due to the following resource:
     <scipython.com/book/chapter-8-scipy/additional-examples/the-sir-epidemic-model/>
     """
+
+    pf = True
 
     def deriv(y, t, N, beta, gamma):
         """
@@ -271,62 +274,79 @@ def fit_SIR(dates,totals):
         return dSdt,dIdt,dRdt
     
 
-    def find_avg_delta(actual,model):
-        """
-
-        """
-
-
-
-    # first, make a range of int's to correspond to the dates
-    dates_int = range(len(dates))
-
     # next, zero-normalize the data (beceause the COVID counter starts as case 88)
     totals_norm = []
     for n in totals:
         totals_norm.append(n-88)
 
     # make a list of time points (in days)
-    t = np.linspace(0, 365*2, 365*2-1)
+    t = range(0,400)
 
     # estimate total population, N
-    N = range(4000,7500,500)
+    N_rng = range(10000,15000,100)
 
     # estimate initial number of infected and recovered individuals, I_0, R_0
     I_0 = 1
     R_0 = 0
 
-    # everyone else, S_0, is susceptible
-    S_0 = N - I_0 - R_0
-
-    # compile into tuple of initial conditions
-    y_0 = (S_0, I_0, R_0)
-
     # estimate contact rate, beta, and mean recovery rate, gamma (in 1/days)
-    beta = np.arange(0.13,0.21,0.01)
-    gamma = np.arrange(0.09,0.16,0.01)
+    beta_rng = np.arange(0.13,0.21,0.01)
+    gamma_rng = np.arange(0.09,0.21,0.01)
 
-    # integrate the SIR equations over t
-    ret = odeint(deriv, y_0, t, args=(N, beta, gamma))
-    S, I, R = ret.T
+    if pf:
+        # make plot
+        fig = plt.figure(figsize=(9,5))
+        x_min = 0
+        x_max = 400
+        y_min = 0
+        y_max = 2000
+        ax = fig.add_subplot()
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
 
-    # test plot
-    fig = plt.figure(figsize=(9,9))
-    spec = gridspec.GridSpec(ncols=1,nrows=3)
-    x_min = 0
-    x_max = 400
-    y_min = 0
-    y_max = 2000
+    # loop thru each population, beta, and gamma estimate
+    best_worst_delta = 99999
+    for n in N_rng:
 
-    ax = fig.add_subplot(spec[3,0])
-    ax.plot(dates_int,totals_norm,marker="o")
-    ax.set_xlim(x_min, x_max)
-    ax.set_ylim(y_min, y_max)
-    ax.plot(t,I)
-    ax.legend("Total cases","Infection rate")
-    
-    plt.show()
+        # everyone else, S_0, is susceptible
+        S_0 = n - I_0 - R_0
 
+        # compile into tuple of initial conditions
+        y_0 = (S_0, I_0, R_0)
 
-    # return dates_proj,totals_proj
+        for b in beta_rng:
+            for g in gamma_rng:
+
+                # integrate the SIR equations over t
+                # we only care about I
+                ret = odeint(deriv, y_0, t, args=(n, b, g))
+                foo, I, bar = ret.T
+
+                # slice the modeled infection rate data to be equal to the lenght of
+                # data we currently have
+                I_slc = I[0:len(totals)]
+
+                # compute a list of deltas between the actual data and the modeled
+                # data, then compute its average
+                abs_deltas = [abs(totals_norm[i]-I[i]) for i in range(len(I_slc))]
+                worst_delta = max(abs_deltas)
+                
+                # ax.plot(t,I)
+
+                # compare the avg that was just calculated to the best avg that has
+                # been calcualted  for the entire run and assign new "winners", if
+                # appropriate
+                if worst_delta < best_worst_delta:
+                    params = (n, b, g)
+                    I_best = I
+                    best_deltas = abs_deltas
+                    best_worst_delta = worst_delta
+
+    if pf:
+        ax.plot(range(len(totals_norm)),totals_norm,marker="o",color='r')
+        ax.plot(t,I_best,color='black')
+        ax.legend(["Total cases","Projected SIR Infection Curve"])
+        plt.show()
+
+    return I_best, params
 
