@@ -14,6 +14,11 @@ class all_covid_data():
         self.report_date_list_corr,\
         self.running_total_list_corr = az.fill_data(self.report_date_list,\
                                                     self.running_total_list)
+        
+        self.report_date_list_back,\
+        self.running_tot_list_back = az.fill_backwards(self.report_date_list_corr,\
+                                                       self.running_total_list_corr)
+
 
         self.facility_list,\
         self.count_per_facility,\
@@ -39,7 +44,7 @@ class all_covid_data():
         self.N_day_running_avg = az.get_running_average(self.daily_total_list,\
                                                         self.N_day_avg)
 
-        self.N_day_running_avg2 = az.get_running_average(self.running_total_list_corr,15)
+        self.N_day_running_avg2 = az.get_running_average(self.running_total_list_corr,10)
 
         self.sir_data,\
         self.sir_params = az.fit_SIR(self.N_day_running_avg2)

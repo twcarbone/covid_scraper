@@ -155,6 +155,50 @@ def fill_data(r_dates,daily_running):
 
 
 
+def fill_backwards(dates_corr, running_corr):
+    """
+    The EB landing covid tracker started tracking at case 88. This function
+    extrapolates backwards and returns an array of dates and running totals going
+    back to case 1. note that the script calculates a running total at each day, so
+    fractional totals may arise.
+    """
+
+    # the cutoff date by which to calcualte the linear portion of the curve is
+    # guessed-and-checked until an extrapolation curve is generated that projects
+    # cases beginning to be recorded in approx. January 2020, which is when COVID
+    # first started to impact the US.
+    guess_date = "September 22, 2020"
+    x1_o = 0
+    x2_o = dates_corr.index(datetime.datetime.strptime(guess_date,'%B %d, %Y'))
+
+    y1_o = running_corr[0]
+    y2_o = running_corr[x2_o]
+
+    # compute slope of the linear portion of the line
+    m = (y2_o - y1_o) / (x2_o - x1_o)
+
+    # work backwards from the start date, linearly decrimenting
+    dates_corr_extrap_list = []
+    running_corr_exrap_list = []
+    y2 = y1_o
+    for i in range(1,500):
+        # calculate the case total one day previous
+        #   m = (y2-y1)/(x2-x1)
+        #   but, x2-x1 = 1 because we are decrimenting one day at a time
+        #   so, y1 = y2 - m
+        y1 = y2 - m
+
+        if y1 > 0:
+            dates_corr_extrap_list.insert(0,dates_corr[0]-datetime.timedelta(days=i))
+            running_corr_exrap_list.insert(0,y1)
+            y2 = y1
+        else:
+            break
+
+    return dates_corr_extrap_list, running_corr_exrap_list
+
+
+
 def bucketize_cases(covid_data,attr,print_flag=False):
     """
     Return three lists
@@ -260,7 +304,7 @@ def fit_SIR(totals):
     <scipython.com/book/chapter-8-scipy/additional-examples/the-sir-epidemic-model/>
     """
 
-    pf = True
+    pf = False
 
     def deriv(y, t, N, beta, gamma):
         """

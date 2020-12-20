@@ -55,7 +55,9 @@ plot(all_covid_data.report_date_list,
      all_covid_data.report_date_list_corr,
      all_covid_data.N_day_running_avg2,
      all_covid_data.sir_data,
-     all_covid_data.sir_params)
+     all_covid_data.sir_params,
+     all_covid_data.report_date_list_back,
+     all_covid_data.running_tot_list_back)
 logger.info("plot the data")
 
 logger.info("*************** end script ***************")
