@@ -2,7 +2,8 @@
 #### Overview
 This project retrieves data from the Electric Boat
 [EBLanding](https://eblanding.com/covid-19-case-report-summary/) COVID-19 Case Report
-Summary website and plots it in interesting ways.
+Summary website and plots it in interesting ways. The Susceptible, Infected, Recovered
+(SIR) model for disease spread is used to project "the curve" at Electric Boat.
 #### Execution
 Run `python3 main.py` from your terminal.
 #### Methods
@@ -15,7 +16,8 @@ request to the URL and parse the html.
 at Electric Boat.
 
 `analyze.py` contains functions that organize the COVID case data by facility,
-department, etc.
+department, etc. This module also curve-fits an SIR disease spread model to the
+actual Electric Boat recorded case data.
 
 `plot.py` plots the data using the `matplotlib` library.
 
