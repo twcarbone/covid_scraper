@@ -33,6 +33,7 @@ logger.info("merge <pre> and <p> lists")
 # orgnaize summary data into class
 all_covid_data = all_covid_data(covid_data)
 
+# all_covid_data.print_all_cases()
 """
 conn = db.connect_to_psql_db("eb_covid")
 for case in covid_data:

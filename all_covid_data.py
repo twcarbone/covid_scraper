@@ -48,3 +48,17 @@ class all_covid_data():
 
         self.sir_data,\
         self.sir_params = az.fit_SIR(self.N_day_running_avg2)
+
+    def print_all_cases(self):
+        """Print the total cases at each day."""
+
+        for i in range(len(self.running_tot_list_back)):
+            print(self.report_date_list_back[i].strftime("%B %d, %Y"),end="")
+            print(" - ",end="")
+            print(self.running_tot_list_back[i])
+
+        for j in range(len(self.running_total_list_corr)):
+            print(self.report_date_list_corr[j].strftime("%B %d, %Y"),end="")
+            print(" - ",end="")
+            print(self.running_total_list_corr[j])
+    

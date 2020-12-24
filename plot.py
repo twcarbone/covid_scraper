@@ -74,15 +74,20 @@ def plot(dates,
     sir_dates = [dates_corr[0]+dt.timedelta(days=i) for i in range(len(sir_data))]
     sir_data_88 = [sir_data[i]+88 for i in range(len(sir_data))]
     ax4 = fig.add_subplot(spec[2,0])
-    ax4.set_ylim(0,1200)
+    ax4.set_ylim(0,1800)
     ax4.plot(dates_back, running_tot_back, marker='o', color='b')
     ax4.plot(dates_corr, running_totals_corr, marker='o', color='r')
     ax4.plot(sir_dates, sir_data_88, color='black')
     ax4.set_ylabel("Running Total")
     ax4.grid(which='major',axis='y')
+
+    params = f"(N={sir_params[0]}, "\
+             + f"\u03B2={round(sir_params[1],2)}, "\
+             + f"\u03B3={round(sir_params[2],2)})"
     ax4.legend(["Linearly Extrapolated",\
                 "10-Day Actual Running Average",\
-                "SIR Disease Spread Projections"])
+                "SIR Disease Spread Projections "+params])
+
     plt.xticks(rotation=45)
     plt.gcf().autofmt_xdate()
 

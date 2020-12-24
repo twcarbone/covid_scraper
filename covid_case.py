@@ -132,6 +132,7 @@ def get_last_day(case_str,case_num):
         239 : "N/A",
         331 : "N/A",
         700 : "December 3, 2020",
+        797: "N/A",
         798 : "N/A"
     }
 
