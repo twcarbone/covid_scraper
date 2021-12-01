@@ -1,49 +1,46 @@
 import requests
-from bs4 import BeautifulSoup as bs
-from covid_case import covid_case
-from log import logger_setup
-
-logger = logger_setup("get_web_data.py")
+from bs4 import BeautifulSoup
 
 
-def get_soup(url,print_flag=False):
+def get_soup(URL, verbose=False):
     """
-
+    Return soup object of URL.
     """
-    page = requests.get(url)
-    logger.info(f"HTTP status is: {page.status_code}")
-    soup = bs(page.content, 'html.parser')
+    page = requests.get(URL)
+    soup = BeautifulSoup(page.content, 'html.parser')
 
-    if print_flag:
+    if verbose:
         article = soup.find('article')
         print(article.prettify())
 
-    logger.info("soup object successfully returned")
-    return soup
-    
+    return soup    
 
 
-def parse_html(tag,soup):
+def parse_html(soup, verbose=False):
     """
-    Returns a list of covid_case classes, one for each covid case at EB.
+
     """
-    covid_data = []
+    cases = []
 
-    tag_list = soup.find('article').find('div').find_all(tag)
-    for pre in tag_list:
-    
-        # extract some text
-        pre_text = pre.get_text() # Posted on October 17, 2020:
-        date_str = pre_text[pre_text.index("on")+3:pre_text.index(":")] # October 17, 2020
+    # Each <pre> or <p> tag denotes a new day of case reporting
+    # e.g. 'Posted on October 17, 2020:'
+    pre = soup.find('article').find('div').find_all('pre')
+    p = soup.find('article').find('div').find_all('p')
 
-        ul = pre.next_sibling.next_sibling.find_all('li')
-        for li in ul:
+    for item in pre + p: 
+        date = item.get_text()[10:-1]
 
-            # extract some text
-            case_str = li.find('h3').get_text() # #95: Employee at New London facility, Dept. 462
+        # Each case reported on the given day is contained in an <ul> tag
+        for li in item.next_sibling.next_sibling.find_all('li'):
 
-            # add the case to the COVID_Day
-            covid_data.append(covid_case(date_str,case_str))
+            # <h3> of the <li> contains the case informatioon
+            case = li.find('h3').get_text()
 
-    covid_data.reverse()
-    return covid_data
+            # Add cases from oldest to newest
+            cases.insert(0, (date, case))
+
+    if verbose:
+        for case in cases:
+            print(case[0] + ': ' + case[1])
+
+    return cases
