@@ -29,19 +29,19 @@ with session_scope() as s:
 #    r = s.query(Case.case_num, Case.date).filter(Case.dept=='462').all()
     
     # SELECT * FROM cases WHERE dept='462' AND case_num>1000
-#     r = s.query(Case).filter(
-#             and_(
-#                 Case.dept=='462',
-#                 Case.case_num>1000
-#                 )
-#             ).all()
+#    r = s.query(Case).filter(
+#            and_(
+#                Case.dept=='462',
+#                Case.case_num>1000
+#                )
+#            ).all()
    
     # SELECT COUNT(case_num), dept FROM cases GROUP BY dept DESC LIMIT 15
-#     r = s.query(
-#             func.count(Case.case_num), Case.dept).\
-#             group_by(Case.dept).\
-#             order_by(func.count(Case.case_num).desc()).\
-#             limit(15)
+    r = s.query(
+            func.count(Case.case_num), Case.dept).\
+            group_by(Case.dept).\
+            order_by(func.count(Case.case_num).desc()).\
+            limit(15)
     
     for item in r:
         print(item)
