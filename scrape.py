@@ -40,7 +40,7 @@ def parse_html(soup, verbose=False):
             # Parse information from each case description
             num = int(desc[desc.find('#')+1:desc.find(':')].replace(',',''))
             bldg = desc[desc.find('from')+4:desc.find('facility')-1]
-            dept = desc[desc.find('Dept')+6:desc.find('Dept')+10]
+            dept = desc[desc.find('Dept')+6:desc.find('Dept')+9]
 
             # Add cases from oldest to newest
             cases.insert(0, (date, num, bldg, dept, desc))
