@@ -34,16 +34,20 @@ def parse_html(soup, verbose=False):
         # Each case reported on the given day is contained in an <ul> tag
         for li in item.next_sibling.next_sibling.find_all('li'):
 
-            # <h3> of the <li> contains the case informatioon
+            # <h3> of the <li> contains the entire case description
             desc = li.find('h3').get_text()
+
+            # Parse information from each case description
             num = int(desc[desc.find('#')+1:desc.find(':')].replace(',',''))
+            bldg = desc[desc.find('from')+4:desc.find('facility')-1]
+            dept = desc[desc.find('Dept')+6:desc.find('Dept')+10]
 
             # Add cases from oldest to newest
-            cases.insert(0, (date, num, desc))
+            cases.insert(0, (date, num, bldg, dept, desc))
 
     if verbose:
         for case in cases:
-            print(str(case[0]) + ', ' + str(case[1]) + ' (' + case[2] + ')')
+            print('%s, %d, %s, %s (%s)' % case)
         
         print(str(cases[0][1]))
         print(type(cases[0][1]))
