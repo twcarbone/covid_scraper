@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 
 def get_soup(URL, verbose=False):
@@ -28,19 +29,24 @@ def parse_html(soup, verbose=False):
     p = soup.find('article').find('div').find_all('p')
 
     for item in pre + p: 
-        date = item.get_text()[10:-1]
+        date = datetime.strptime(item.get_text()[10:-1], '%B %d, %Y')
 
         # Each case reported on the given day is contained in an <ul> tag
         for li in item.next_sibling.next_sibling.find_all('li'):
 
             # <h3> of the <li> contains the case informatioon
             case = li.find('h3').get_text()
+            num = int(case[case.find('#')+1:case.find(':')].replace(',',''))
 
             # Add cases from oldest to newest
-            cases.insert(0, (date, case))
+            cases.insert(0, (date, num, case))
 
     if verbose:
         for case in cases:
-            print(case[0] + ': ' + case[1])
+            print(str(case[0]) + ', ' + str(case[1]))
+        
+        print(str(cases[0][1]))
+        print(type(cases[0][1]))
+        print(len(cases))
 
     return cases
