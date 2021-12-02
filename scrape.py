@@ -35,15 +35,15 @@ def parse_html(soup, verbose=False):
         for li in item.next_sibling.next_sibling.find_all('li'):
 
             # <h3> of the <li> contains the case informatioon
-            case = li.find('h3').get_text()
-            num = int(case[case.find('#')+1:case.find(':')].replace(',',''))
+            desc = li.find('h3').get_text()
+            num = int(desc[desc.find('#')+1:desc.find(':')].replace(',',''))
 
             # Add cases from oldest to newest
-            cases.insert(0, (date, num, case))
+            cases.insert(0, (date, num, desc))
 
     if verbose:
         for case in cases:
-            print(str(case[0]) + ', ' + str(case[1]))
+            print(str(case[0]) + ', ' + str(case[1]) + ' (' + case[2] + ')')
         
         print(str(cases[0][1]))
         print(type(cases[0][1]))
